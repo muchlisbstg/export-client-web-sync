@@ -14,6 +14,8 @@ npm run dev
 
 Frontend web tersedia di `http://localhost:5173`, backend web di `http://localhost:4000`. SQLite dibuat otomatis di `data/export-client.sqlite` dan tidak dimasukkan ke Git. API dan schema sinkronisasi: [`docs/openapi.yaml`](docs/openapi.yaml).
 
+Default API mengikat ke loopback (`127.0.0.1`). Untuk pengujian dari perangkat lain di LAN tepercaya, atur `API_HOST=0.0.0.0` secara eksplisit dan batasi firewall; jangan ekspos API ke internet publik tanpa autentikasi, TLS, dan kontrol akses yang sesuai.
+
 ```bash
 npm test
 npm run typecheck
@@ -65,7 +67,7 @@ SYNC_PEERS=mobile-local=http://127.0.0.1:4001,desktop-local=http://127.0.0.1:400
 
 Mobile dan desktop memakai ID unik (`mobile-local`, `desktop-local`) serta mendaftarkan peer lain dengan URL yang dapat dijangkau dari backend tersebut. Buat secret dengan `openssl rand -hex 32`; jangan commit secret, memasukkannya ke `EXPO_PUBLIC_*`, log, atau URL. Sync nonaktif secara default ketika secret kosong. Endpoint peer-to-peer tidak memakai autentikasi pengguna; bearer secret hanya untuk layanan-ke-layanan.
 
-Untuk jaringan selain loopback, wajib gunakan HTTPS/TLS dan firewall; contoh HTTP loopback hanya untuk pengujian lokal. Server web saat ini mendengarkan `0.0.0.0` agar bisa dijangkau jaringan pengembangan; jangan mengekspos API publik tanpa kontrol akses dan transport yang sesuai. API klien biasa tetap demo dan tanpa login.
+Untuk jaringan selain loopback, wajib gunakan HTTPS/TLS dan firewall. Contoh HTTP loopback hanya untuk pengujian lokal. API klien biasa tetap demo dan tanpa login.
 
 ## Cakupan, privasi, dan batas penggunaan
 
