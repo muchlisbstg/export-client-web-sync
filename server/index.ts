@@ -11,7 +11,7 @@ import { createSyncCoordinator, isValidSyncSecret, matchesSyncSecret, parseSyncP
 const db = createDatabase();
 const app = express();
 const port = Number(process.env.API_PORT ?? 4000);
-const host = process.env.API_HOST ?? "0.0.0.0";
+const host = process.env.API_HOST ?? "127.0.0.1";
 const allowedOrigins = (process.env.WEB_ORIGINS ?? "http://localhost:5173")
   .split(",")
   .map((origin) => origin.trim())
