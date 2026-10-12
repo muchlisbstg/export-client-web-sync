@@ -7,6 +7,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import { z } from "zod";
 import { createDatabase, type InquiryRecord, type Product } from "./database";
 import { createSyncCoordinator, isValidSyncSecret, matchesSyncSecret, parseSyncPeers } from "./sync";
+import { createSupabaseAuth } from "./auth";
 
 const db = createDatabase();
 const app = express();
@@ -85,6 +86,16 @@ const syncInquiryInput = z.object({
   createdAt: z.string().datetime({ offset: true }),
   originNodeId: z.string().regex(/^[A-Za-z0-9._-]{1,80}$/),
 }).strict();
+
+const auth = createSupabaseAuth();
+app.get("/api/v1/auth/session", auth.authenticate, (_request, response) => {
+  response.setHeader("Cache-Control", "no-store");
+  return response.json({ user: response.locals.authIdentity });
+});
+app.get("/api/v1/admin/session", auth.authenticate, auth.requireAdmin, (_request, response) => {
+  response.setHeader("Cache-Control", "no-store");
+  return response.json({ ok: true, user: response.locals.authIdentity });
+});
 
 app.get("/health", (_request, response) => {
   db.prepare("SELECT 1").get();
