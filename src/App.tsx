@@ -356,6 +356,19 @@ export default function App() {
         <span className="sync-pill"><span className="status-dot" /> Peer API · web + mobile + desktop</span>\n        <button type="button" onClick={() => setShowAuthPanel((open) => !open)} style={{ border: "1px solid #cfd8d0", borderRadius: 10, padding: "9px 12px", background: "#fff", color: "#17352c", cursor: "pointer" }}>Admin login</button>
       </header>
 
+      {showAuthPanel && <section aria-label="Admin sign in" style={{ margin: "12px 0", padding: 16, border: "1px solid #dfe5de", borderRadius: 14, background: "#fff" }}>
+        <h2 style={{ marginTop: 0 }}>Akses admin</h2>
+        {authAccessToken ? <p role="status">Sesi aktif · peran: <strong>{authRole}</strong></p> : null}
+        <form onSubmit={handleAuthSubmit} style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+          <input aria-label="Email admin" type="email" autoComplete="username" required value={authEmail} onChange={(event) => setAuthEmail(event.target.value)} placeholder="Email" style={{ padding: 10, border: "1px solid #cfd8d0", borderRadius: 8 }} />
+          <input aria-label="Password" type="password" autoComplete="current-password" required value={authPassword} onChange={(event) => setAuthPassword(event.target.value)} placeholder="Password" style={{ padding: 10, border: "1px solid #cfd8d0", borderRadius: 8 }} />
+          <button type="submit" disabled={authBusy} style={{ padding: "10px 14px", border: 0, borderRadius: 8, background: "#194b3c", color: "#fff" }}>{authBusy ? "Memeriksa…" : "Masuk"}</button>
+          {authAccessToken && <button type="button" onClick={() => { setAuthAccessToken(""); setAuthRole(""); setAuthMessage("Sesi dihapus dari memori."); }} style={{ padding: "10px 14px", borderRadius: 8 }}>Keluar</button>}
+        </form>
+        {authMessage && <p role="status" style={{ marginBottom: 0 }}>{authMessage}</p>}
+        <small>Token hanya disimpan di memori UI. Akses admin tetap diputuskan oleh backend.</small>
+      </section>}
+
       <section className="hero" id="top">
         <div className="hero-copy">
           <p className="eyebrow">PORTAL KLIEN EKSPOR</p>
