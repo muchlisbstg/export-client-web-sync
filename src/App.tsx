@@ -74,6 +74,39 @@ export default function App() {
   const [trackingCodeNotice, setTrackingCodeNotice] = useState("");
   const [trackingInput, setTrackingInput] = useState("");
   const [trackedInquiry, setTrackedInquiry] = useState<InquiryStatus | null>(null);
+  const [showAuthPanel, setShowAuthPanel] = useState(false);
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authAccessToken, setAuthAccessToken] = useState("");
+  const [authRole, setAuthRole] = useState("");
+  const [authBusy, setAuthBusy] = useState(false);
+  const [authMessage, setAuthMessage] = useState("");
+
+  async function handleAuthSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const authUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
+    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
+    if (!authUrl || !anonKey) { setAuthMessage("Login belum dikonfigurasi: isi VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY."); return; }
+    setAuthBusy(true); setAuthMessage("");
+    try {
+      const login = await fetch(`${authUrl.replace(/\\/+$/, "")}/auth/v1/token?grant_type=password`, {
+        method: "POST", headers: { "Content-Type": "application/json", apikey: anonKey },
+        body: JSON.stringify({ email: authEmail.trim(), password: authPassword }),
+      });
+      const loginBody = await login.json().catch(() => ({})) as { access_token?: string; msg?: string; message?: string; error_description?: string };
+      if (!login.ok || !loginBody.access_token) throw new Error(loginBody.error_description || loginBody.msg || loginBody.message || "Login gagal.");
+      const session = await fetch("/api/v1/auth/session", { headers: { Authorization: `Bearer ${loginBody.access_token}` }, cache: "no-store" });
+      const sessionBody = await session.json().catch(() => ({})) as { user?: { id: string; role: string }; error?: string };
+      if (!session.ok || !sessionBody.user) throw new Error(sessionBody.error || "Backend menolak sesi.");
+      setAuthAccessToken(loginBody.access_token); setAuthRole(sessionBody.user.role); setAuthPassword("");
+      if (sessionBody.user.role === "admin") {
+        const admin = await fetch("/api/v1/admin/session", { headers: { Authorization: `Bearer ${loginBody.access_token}` }, cache: "no-store" });
+        if (!admin.ok) throw new Error("Backend tidak mengizinkan peran admin.");
+        setAuthMessage("Sesi admin diverifikasi oleh backend.");
+      } else setAuthMessage("Login berhasil, tetapi akun ini tidak memiliki peran admin.");
+    } catch (caught) { setAuthAccessToken(""); setAuthRole(""); setAuthMessage(caught instanceof Error ? caught.message : "Login gagal."); }
+    finally { setAuthBusy(false); }
+  }
 
   async function loadProducts() {
     setLoading(true);
@@ -320,7 +353,7 @@ export default function App() {
           <span className="brand-mark">E</span>
           <span>Export<span className="brand-light">Client</span></span>
         </a>
-        <span className="sync-pill"><span className="status-dot" /> Peer API · web + mobile + desktop</span>
+        <span className="sync-pill"><span className="status-dot" /> Peer API · web + mobile + desktop</span>\n        <button type="button" onClick={() => setShowAuthPanel((open) => !open)} style={{ border: "1px solid #cfd8d0", borderRadius: 10, padding: "9px 12px", background: "#fff", color: "#17352c", cursor: "pointer" }}>Admin login</button>
       </header>
 
       <section className="hero" id="top">
