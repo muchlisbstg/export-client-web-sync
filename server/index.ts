@@ -64,6 +64,7 @@ function createRateLimiter(limit: number) {
 
 const createInquiryLimiter = createRateLimiter(positiveIntegerEnv("RFQ_LIMIT_PER_15M", 10));
 const trackInquiryLimiter = createRateLimiter(positiveIntegerEnv("TRACK_LOOKUP_LIMIT_PER_15M", 60));
+const authLimiter = createRateLimiter(positiveIntegerEnv("AUTH_LIMIT_PER_15M", 120));
 
 const inquiryInput = z.object({
   customerName: z.string().trim().min(2).max(120),
@@ -88,11 +89,11 @@ const syncInquiryInput = z.object({
 }).strict();
 
 const auth = createSupabaseAuth();
-app.get("/api/v1/auth/session", auth.authenticate, (_request, response) => {
+app.get("/api/v1/auth/session", authLimiter, auth.authenticate, (_request, response) => {
   response.setHeader("Cache-Control", "no-store");
   return response.json({ user: response.locals.authIdentity });
 });
-app.get("/api/v1/admin/session", auth.authenticate, auth.requireAdmin, (_request, response) => {
+app.get("/api/v1/admin/session", authLimiter, auth.authenticate, auth.requireAdmin, (_request, response) => {
   response.setHeader("Cache-Control", "no-store");
   return response.json({ ok: true, user: response.locals.authIdentity });
 });
