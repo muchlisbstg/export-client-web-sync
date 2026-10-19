@@ -192,7 +192,7 @@ try {
     for (let attempt=0; attempt<100; attempt+=1) {
       const response=await fetch(node.base+"/api/v1/transactions/"+transactionId,{headers:tenantHeaders(token,tenantId)});
       if(response.ok) return (await response.json()).data;
-      if(response.status!==404) throw new Error("Unexpected tenant transaction response "+response.status+" from "+node.base+": "+await response.text());
+      if(response.status!==404 && response.status!==403) throw new Error("Unexpected tenant transaction response "+response.status+" from "+node.base+": "+await response.text());
       await delay(100);
     }
     throw new Error("Tenant transaction "+transactionId+" did not replicate to "+node.base);
