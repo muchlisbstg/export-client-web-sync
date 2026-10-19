@@ -124,11 +124,12 @@ authUrl = "http://127.0.0.1:" + authPort;
 const portA = await allocatePort();
 const portB = await allocatePort();
 const portC = await allocatePort();
+const portD = await allocatePort();
 const nodeA = startNode({
   nodeId: "web-a",
   port: portA,
   dbPath: path.join(tempDir, "web-a.sqlite"),
-  peers: `web-b=http://127.0.0.1:${portB}`,
+  peers: `web-b=http://127.0.0.1:${portB},web-c=http://127.0.0.1:${portC}`,
   sharedSecret: secret,
   rfqLimit: 3,
   trackLimit: 3,
@@ -137,28 +138,41 @@ const nodeB = startNode({
   nodeId: "web-b",
   port: portB,
   dbPath: path.join(tempDir, "web-b.sqlite"),
-  peers: `web-a=http://127.0.0.1:${portA}`,
+  peers: `web-a=http://127.0.0.1:${portA},web-c=http://127.0.0.1:${portC}`,
   sharedSecret: secret,
 });
 const nodeC = startNode({
-  nodeId: "web-disabled",
+  nodeId: "web-c",
   port: portC,
+  dbPath: path.join(tempDir, "web-c.sqlite"),
+  peers: "web-a=http://127.0.0.1:" + portA + ",web-b=http://127.0.0.1:" + portB,
+  sharedSecret: secret,
+});
+const nodeD = startNode({
+  nodeId: "web-disabled",
+  port: portD,
   dbPath: path.join(tempDir, "web-disabled.sqlite"),
 });
 
 try {
-  const [healthA, healthB, healthC] = await Promise.all([waitForHealth(nodeA), waitForHealth(nodeB), waitForHealth(nodeC)]);
+  const [healthA, healthB, healthC, healthD] = await Promise.all([waitForHealth(nodeA), waitForHealth(nodeB), waitForHealth(nodeC), waitForHealth(nodeD)]);
   assert.equal(healthA.status, "ok");
   assert.equal(healthA.nodeId, "web-a");
   assert.equal(healthA.syncEnabled, true);
-  assert.deepEqual(healthA.syncStatus, { enabled: true, peerCount: 1, pendingDeliveries: 0, retryingDeliveries: 0, conflicts: 0 });
+  assert.deepEqual(healthA.syncStatus, { enabled: true, peerCount: 2, pendingDeliveries: 0, retryingDeliveries: 0, conflicts: 0 });
   assert.equal(healthB.syncEnabled, true);
-  assert.equal(healthC.syncEnabled, false);
-  assert.equal(healthC.syncStatus.enabled, false);
+  assert.equal(healthC.syncEnabled, true);
+  assert.equal(healthC.syncStatus.enabled, true);
+  assert.equal(healthD.syncEnabled, false);
+  assert.equal(healthD.syncStatus.enabled, false);
 
+  for (const node of [nodeA,nodeB,nodeC]) {
+    const migrationDb = new Database(node.dbPath);
+    try { migrateTenantIsolation(migrationDb); }
+    finally { migrationDb.close(); }
+  }
   const migrationDb = new Database(nodeA.dbPath);
   try {
-    migrateTenantIsolation(migrationDb);
     const createdAt = new Date().toISOString();
     const tenantInsert = migrationDb.prepare("INSERT INTO tenants (id,tenant_type,display_name,created_at) VALUES (?,?,?,?)");
     tenantInsert.run("buyer-a", "buyer", "Buyer A", createdAt);
@@ -174,6 +188,15 @@ try {
   }
 
   const tenantHeaders = (token, tenantId) => ({ authorization: "Bearer " + token, "x-active-tenant-id": tenantId, "content-type": "application/json" });
+  async function waitForTenantTransaction(node, transactionId, token, tenantId) {
+    for (let attempt=0; attempt<100; attempt+=1) {
+      const response=await fetch(node.base+"/api/v1/transactions/"+transactionId,{headers:tenantHeaders(token,tenantId)});
+      if(response.ok) return (await response.json()).data;
+      if(response.status!==404 && response.status!==403) throw new Error("Unexpected tenant transaction response "+response.status+" from "+node.base+": "+await response.text());
+      await delay(100);
+    }
+    throw new Error("Tenant transaction "+transactionId+" did not replicate to "+node.base);
+  }
   const unauthenticatedTransactions = await fetch(nodeA.base + "/api/v1/transactions", { headers: { "x-active-tenant-id": "buyer-a" } });
   assert.equal(unauthenticatedTransactions.status, 401);
   const missingTenant = await fetch(nodeA.base + "/api/v1/transactions", { headers: { authorization: "Bearer buyer-token" } });
@@ -185,6 +208,12 @@ try {
   assert.equal(createdTransactionResponse.status, 201);
   const createdTransaction = (await createdTransactionResponse.json()).data;
   assert.equal(createdTransaction.buyerTenantId, "buyer-a");
+  const replicated = await Promise.all([
+    waitForTenantTransaction(nodeB,createdTransaction.id,"buyer-token","buyer-a"),
+    waitForTenantTransaction(nodeC,createdTransaction.id,"buyer-token","buyer-a"),
+  ]);
+  assert.equal(replicated[0].id,createdTransaction.id);
+  assert.equal(replicated[1].id,createdTransaction.id);
   const tenantList = await fetch(nodeA.base + "/api/v1/transactions", { headers: tenantHeaders("buyer-token", "buyer-a") });
   assert.equal((await tenantList.json()).data.length, 1);
   const crossTenantRead = await fetch(nodeA.base + "/api/v1/transactions/" + createdTransaction.id, { headers: tenantHeaders("outsider-token", "buyer-b") });
@@ -388,7 +417,7 @@ try {
     }
   }
 
-  const disabledSync = await fetch(`${nodeC.base}/api/v1/sync/inquiries`, {
+  const disabledSync = await fetch(`${nodeD.base}/api/v1/sync/inquiries`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: "{}",
