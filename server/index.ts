@@ -382,17 +382,18 @@ app.use((error: unknown, _request: Request, response: Response, _next: NextFunct
   response.status(500).json({ error: "internal_server_error" });
 });
 
+let tenantSyncTimer: NodeJS.Timeout | undefined;
 const server = app.listen(port, host, () => {
   console.log(`Web API node ${nodeId} listening on http://${host}:${port}`);
   sync.start();
-  const tenantSyncTimer = setInterval(() => void flushTenantOutbox(), 2000);
+  tenantSyncTimer = setInterval(() => void flushTenantOutbox(), 2000);
   tenantSyncTimer.unref();
   void flushTenantOutbox();
 });
 
 function shutdown() {
   sync.stop();
-  clearInterval(tenantSyncTimer);
+  if (tenantSyncTimer) clearInterval(tenantSyncTimer);
   server.close(() => {
     db.close();
     process.exit(0);
