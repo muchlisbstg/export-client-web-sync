@@ -159,7 +159,7 @@ try {
   assert.equal(healthA.status, "ok");
   assert.equal(healthA.nodeId, "web-a");
   assert.equal(healthA.syncEnabled, true);
-  assert.deepEqual(healthA.syncStatus, { enabled: true, peerCount: 1, pendingDeliveries: 0, retryingDeliveries: 0, conflicts: 0 });
+  assert.deepEqual(healthA.syncStatus, { enabled: true, peerCount: 2, pendingDeliveries: 0, retryingDeliveries: 0, conflicts: 0 });
   assert.equal(healthB.syncEnabled, true);
   assert.equal(healthC.syncEnabled, true);
   assert.equal(healthC.syncStatus.enabled, true);
