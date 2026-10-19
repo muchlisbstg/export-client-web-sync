@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
+import { createServer as createHttpServer } from "node:http";
+import { migrateTenantIsolation } from "./migrate-tenant-isolation.mjs";
 import { once } from "node:events";
 import { createServer } from "node:net";
 import { mkdtempSync, rmSync } from "node:fs";
@@ -13,6 +15,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const tempDir = mkdtempSync(path.join(os.tmpdir(), "export-client-peer-api-"));
 const secret = "test-sync-secret-32-chars-minimum-123456";
 const processes = [];
+let authUrl = "";
+let authServer;
 
 async function allocatePort() {
   const probe = createServer();
@@ -42,6 +46,8 @@ function startNode({ nodeId, port, dbPath, peers = "", sharedSecret = "", rfqLim
       SYNC_NODE_ID: nodeId,
       SYNC_SHARED_SECRET: sharedSecret,
       SYNC_PEERS: peers,
+      SUPABASE_URL: authUrl,
+      SUPABASE_ANON_KEY: "test-anon-key",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -99,6 +105,22 @@ async function waitForOutboxState(dbPath, inquiryId, peerNodeId, condition, expe
   }
 }
 
+
+const authPort = await allocatePort();
+authServer = createHttpServer((request, response) => {
+  const token = /^Bearer\s+(.+)$/i.exec(String(request.headers.authorization ?? ""))?.[1] ?? "";
+  const ids = { "buyer-token": "buyer-admin", "seller-token": "seller-admin", "member-token": "buyer-member", "outsider-token": "outsider" };
+  if (request.url !== "/auth/v1/user" || !ids[token]) {
+    response.writeHead(401, { "content-type": "application/json" });
+    response.end(JSON.stringify({ error: "invalid_token" }));
+    return;
+  }
+  response.writeHead(200, { "content-type": "application/json" });
+  response.end(JSON.stringify({ id: ids[token] }));
+});
+await new Promise((resolve) => authServer.listen(authPort, "127.0.0.1", resolve));
+authUrl = "http://127.0.0.1:" + authPort;
+
 const portA = await allocatePort();
 const portB = await allocatePort();
 const portC = await allocatePort();
@@ -133,6 +155,59 @@ try {
   assert.equal(healthB.syncEnabled, true);
   assert.equal(healthC.syncEnabled, false);
   assert.equal(healthC.syncStatus.enabled, false);
+
+  const migrationDb = new Database(nodeA.dbPath);
+  try {
+    migrateTenantIsolation(migrationDb);
+    const createdAt = new Date().toISOString();
+    const tenantInsert = migrationDb.prepare("INSERT INTO tenants (id,tenant_type,display_name,created_at) VALUES (?,?,?,?)");
+    tenantInsert.run("buyer-a", "buyer", "Buyer A", createdAt);
+    tenantInsert.run("seller-a", "seller", "Seller A", createdAt);
+    tenantInsert.run("buyer-b", "buyer", "Buyer B", createdAt);
+    const membershipInsert = migrationDb.prepare("INSERT INTO tenant_memberships (tenant_id,user_id,role,status,created_at) VALUES (?,?,?,'active',?)");
+    membershipInsert.run("buyer-a", "buyer-admin", "buyer_admin", createdAt);
+    membershipInsert.run("buyer-a", "buyer-member", "buyer_member", createdAt);
+    membershipInsert.run("seller-a", "seller-admin", "seller_admin", createdAt);
+    membershipInsert.run("buyer-b", "outsider", "buyer_admin", createdAt);
+  } finally {
+    migrationDb.close();
+  }
+
+  const tenantHeaders = (token, tenantId) => ({ authorization: "Bearer " + token, "x-active-tenant-id": tenantId, "content-type": "application/json" });
+  const unauthenticatedTransactions = await fetch(nodeA.base + "/api/v1/transactions", { headers: { "x-active-tenant-id": "buyer-a" } });
+  assert.equal(unauthenticatedTransactions.status, 401);
+  const missingTenant = await fetch(nodeA.base + "/api/v1/transactions", { headers: { authorization: "Bearer buyer-token" } });
+  assert.equal(missingTenant.status, 400);
+  const createdTransactionResponse = await fetch(nodeA.base + "/api/v1/transactions", {
+    method: "POST", headers: tenantHeaders("buyer-token", "buyer-a"),
+    body: JSON.stringify({ buyerTenantId: "buyer-b", sellerTenantId: "seller-a" }),
+  });
+  assert.equal(createdTransactionResponse.status, 201);
+  const createdTransaction = (await createdTransactionResponse.json()).data;
+  assert.equal(createdTransaction.buyerTenantId, "buyer-a");
+  const tenantList = await fetch(nodeA.base + "/api/v1/transactions", { headers: tenantHeaders("buyer-token", "buyer-a") });
+  assert.equal((await tenantList.json()).data.length, 1);
+  const crossTenantRead = await fetch(nodeA.base + "/api/v1/transactions/" + createdTransaction.id, { headers: tenantHeaders("outsider-token", "buyer-b") });
+  assert.equal(crossTenantRead.status, 404);
+  const forgedTenant = await fetch(nodeA.base + "/api/v1/transactions", { headers: tenantHeaders("outsider-token", "buyer-a") });
+  assert.equal(forgedTenant.status, 403);
+  const memberWrite = await fetch(nodeA.base + "/api/v1/transactions/" + createdTransaction.id + "/status", {
+    method: "PATCH", headers: tenantHeaders("member-token", "buyer-a"), body: JSON.stringify({ status: "cancelled" }),
+  });
+  assert.equal(memberWrite.status, 403);
+  const sellerAccept = await fetch(nodeA.base + "/api/v1/transactions/" + createdTransaction.id + "/status", {
+    method: "PATCH", headers: tenantHeaders("seller-token", "seller-a"), body: JSON.stringify({ status: "accepted" }),
+  });
+  assert.equal(sellerAccept.status, 200);
+  const sellerFulfill = await fetch(nodeA.base + "/api/v1/transactions/" + createdTransaction.id + "/status", {
+    method: "PATCH", headers: tenantHeaders("seller-token", "seller-a"), body: JSON.stringify({ status: "fulfilled" }),
+  });
+  assert.equal(sellerFulfill.status, 200);
+  const terminalWrite = await fetch(nodeA.base + "/api/v1/transactions/" + createdTransaction.id + "/status", {
+    method: "PATCH", headers: tenantHeaders("buyer-token", "buyer-a"), body: JSON.stringify({ status: "cancelled" }),
+  });
+  assert.equal(terminalWrite.status, 403);
+
 
   const malformedJson = await fetch(`${nodeA.base}/api/v1/inquiries`, {
     method: "POST",
@@ -466,5 +541,6 @@ try {
       if (node.child.exitCode === null) node.child.kill("SIGKILL");
     }
   }
+  if (authServer?.listening) await new Promise((resolve) => authServer.close(resolve));
   rmSync(tempDir, { recursive: true, force: true });
 }
