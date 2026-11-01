@@ -178,8 +178,8 @@ try {
     desktop: path.join(tempDir, "desktop.sqlite"),
   };
   const peers = {
-    web: `mobile=${mobileBase},desktop=${desktopBase}`,
-    mobile: `web=${webBase},desktop=${desktopBase}`,
+    web: `${nodeIds.mobile}=${mobileBase},${nodeIds.desktop}=${desktopBase}`,
+    mobile: `${nodeIds.web}=${webBase},${nodeIds.desktop}=${desktopBase}`,
     desktop: [
       { nodeId: nodeIds.web, url: webBase },
       { nodeId: nodeIds.mobile, url: mobileBase },
