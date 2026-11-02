@@ -272,14 +272,17 @@ try {
     }
   }
 
-  const duplicateCandidate = sourceRecords[0];
-  assert(duplicateCandidate, "At least one synthetic inquiry must be available for conflict checks");
   const collisionId = "33333333-3333-4333-8333-333333333333";
   let duplicateReplays = 0;
   let recordMismatchConflicts = 0;
   let trackingCodeCollisions = 0;
 
   for (const origin of origins) {
+    // A receiver must only acknowledge a replay from a configured remote peer.
+    // Selecting a source independently for each target avoids nondeterministically
+    // replaying a node's own record back to itself (which is correctly rejected).
+    const duplicateCandidate = sourceRecords.find((record) => record.originNodeId !== origin.nodeId);
+    assert(duplicateCandidate, `${origin.name} must receive a replay from a configured remote peer`);
     const targetDatabase = databases.find(({ name }) => name === origin.name.toLowerCase())?.db;
     assert(targetDatabase, `Missing database for ${origin.name}`);
     const sendSyncRecord = (record) => fetch(`${origin.base}/api/v1/sync/inquiries`, {
