@@ -285,18 +285,18 @@ try {
     assert(duplicateCandidate, `${origin.name} must receive a replay from a configured remote peer`);
     const targetDatabase = databases.find(({ name }) => name === origin.name.toLowerCase())?.db;
     assert(targetDatabase, `Missing database for ${origin.name}`);
-    const sendSyncRecord = (record) => fetch(`${origin.base}/api/v1/sync/inquiries`, {
+    const sendSyncRecord = (record, senderNodeId) => fetch(`${origin.base}/api/v1/sync/inquiries`, {
       method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${secret}` },
+      headers: { "content-type": "application/json", authorization: `Bearer ${secret}`, "x-sync-peer": senderNodeId },
       body: JSON.stringify(record),
     });
 
-    const duplicateResponse = await sendSyncRecord(duplicateCandidate);
+    const duplicateResponse = await sendSyncRecord(duplicateCandidate, duplicateCandidate.originNodeId);
     assert.equal(duplicateResponse.status, 200, `${origin.name} must acknowledge an identical replay`);
     assert.deepEqual(await duplicateResponse.json(), { result: "duplicate" });
     duplicateReplays += 1;
 
-    const mismatchResponse = await sendSyncRecord({ ...duplicateCandidate, customerName: "Conflicting Synthetic Payload" });
+    const mismatchResponse = await sendSyncRecord({ ...duplicateCandidate, customerName: "Conflicting Synthetic Payload" }, duplicateCandidate.originNodeId);
     assert.equal(mismatchResponse.status, 409, `${origin.name} must reject a changed payload with the same inquiry ID`);
     const mismatchBody = await mismatchResponse.json();
     assert.equal(mismatchBody.error, "sync_conflict");
@@ -316,7 +316,7 @@ try {
       ...duplicateCandidate,
       id: collisionId,
       customerName: "Synthetic Tracking-Code Collision",
-    });
+    }, duplicateCandidate.originNodeId);
     assert.equal(collisionResponse.status, 409, `${origin.name} must reject a reused tracking code with a different inquiry ID`);
     const collisionBody = await collisionResponse.json();
     assert.equal(collisionBody.error, "sync_conflict");
