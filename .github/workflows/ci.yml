@@ -2,10 +2,9 @@ name: Web and API CI
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
-  schedule:
-    - cron: "17 3 * * *"
 
 permissions:
   contents: read
@@ -32,23 +31,29 @@ jobs:
   interoperability:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      WEB_BACKEND_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      MOBILE_BACKEND_SHA: ef0730719bc81129a80c99dc77437a51e43f6031
+      DESKTOP_BACKEND_SHA: f6e83c0f310e48b979fec962e569112a5d014b97
     steps:
-      - name: Checkout web repository
+      - name: Checkout Web candidate at immutable SHA
         uses: actions/checkout@v7
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: .ci/web
           persist-credentials: false
-      - name: Checkout mobile backend
+      - name: Checkout Mobile candidate at immutable SHA
         uses: actions/checkout@v7
         with:
           repository: muchlisbstg/export-client-mobile-sync
-          ref: main
+          ref: ${{ env.MOBILE_BACKEND_SHA }}
           path: .ci/mobile
           persist-credentials: false
-      - name: Checkout desktop backend
+      - name: Checkout Desktop candidate at immutable SHA
         uses: actions/checkout@v7
         with:
           repository: muchlisbstg/export-client-desktop-sync
-          ref: main
+          ref: ${{ env.DESKTOP_BACKEND_SHA }}
           path: .ci/desktop
           persist-credentials: false
       - name: Set up Node.js
@@ -57,19 +62,30 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: |
-            package-lock.json
+            .ci/web/package-lock.json
             .ci/mobile/package-lock.json
             .ci/desktop/package-lock.json
-      - name: Install web dependencies
+      - name: Install Web dependencies
         run: npm ci
-      - name: Install mobile dependencies
+        working-directory: .ci/web
+      - name: Install Mobile dependencies
         run: npm ci
         working-directory: .ci/mobile
-      - name: Install desktop dependencies
+      - name: Install Desktop dependencies
         run: npm ci
         working-directory: .ci/desktop
+      - name: Record immutable backend SHAs
+        shell: bash
+        run: |
+          {
+            echo "## SHA-pinned three-backend integration"
+            echo "- Web: `$WEB_BACKEND_SHA`"
+            echo "- Mobile: `$MOBILE_BACKEND_SHA`"
+            echo "- Desktop: `$DESKTOP_BACKEND_SHA`"
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Test three-backend synchronization
         run: npm run test:interop
+        working-directory: .ci/web
         env:
           MOBILE_REPO: ${{ github.workspace }}/.ci/mobile
           DESKTOP_REPO: ${{ github.workspace }}/.ci/desktop
