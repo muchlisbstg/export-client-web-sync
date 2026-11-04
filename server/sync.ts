@@ -172,7 +172,7 @@ export function createSyncCoordinator(options: SyncOptions) {
         try {
           const response = await fetcher(`${item.peerUrl}/api/v1/sync/inquiries`, {
             method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${secret}` },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${secret}`, "x-sync-peer": nodeId },
             body: JSON.stringify(normalizedRecord(record)),
             signal: AbortSignal.timeout(5_000),
           });
