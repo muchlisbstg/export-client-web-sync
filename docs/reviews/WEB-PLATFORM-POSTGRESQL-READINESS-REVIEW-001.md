@@ -244,7 +244,7 @@ These routes are proposals, not claims about existing deployed endpoints. A cano
 |---|---|---|---|
 | WEB-API-001 | CRITICAL | API composition has no PostgreSQL pool/transaction context and reads/writes authoritative business state in SQLite. | `package.json`, `server/index.ts`, `server/database.ts` |
 | WEB-API-002 | HIGH | Transaction creation/status mutation is implemented directly in route handlers over SQLite, without demonstrated PostgreSQL RLS or DB-level canonical constraints. | Transaction routes in `server/index.ts` |
-| WEB-API-003 | HIGH | Existing route contract and proposed canonical contract are not yet reconciled into a versioned OpenAPI artifact. | Inspected server routes; OpenAPI artifact not verified in reviewed paths |
+| WEB-API-003 | HIGH | Existing OpenAPI describes legacy peer-local SQLite inquiry/catalogue and sync APIs, not the canonical transaction/participant/assignment command contract. | `docs/openapi.yaml` at reviewed main SHA |
 | WEB-API-004 | MEDIUM | Public inquiry creation and tracking lookup need explicit product policy for authentication, ownership, privacy, and abuse prevention. | Inquiry routes in `server/index.ts` |
 
 ### 5.5 Acceptance criteria
