@@ -399,16 +399,16 @@ No test may be marked PASS solely because a test harness or fixture exists. A pa
 
 The following mapping uses the current project decision register as supplied in the wider architecture review. It does not claim the Web repository implements these decisions.
 
-| Decision | Normative requirement carried into Web review | Web evidence/gap | Status |
+| Decision | Normative requirement from the Mobile canonical decision register | Web evidence/gap | Status |
 |---|---|---|---|
-| DEC-001 | Canonical tenant/legal-party and participant identity invariants | Web SQLite Buyer/Seller model; no full canonical Supplier participant model evidenced | GAP |
-| DEC-002 | Versioned tenant–legal-party binding with history/effective date/audit | No matching complete binding model evidenced in Web source | GAP |
-| DEC-003 | One participant per tenant/transaction; uniqueness and historical integrity | Web transaction model only has Buyer/Seller tenant columns | GAP |
-| DEC-004 | Buyer/Seller/Supplier are independent tenants; Supplier participation explicit | Supplier participant not represented in inspected Web tenant middleware/bundle | GAP |
-| DEC-005 | Stable membership identity and exact site-link assignment tuple; operational site scope | Web source does not demonstrate canonical assignment/site model | GAP |
-| DEC-006 | RLS normative matrix; executable policy and negative tests required for closure | Web runtime uses SQLite; no PostgreSQL RLS integration evidenced | BLOCKED |
-| DEC-007 | Actual API/database runtime provenance must be evidenced | Web source proves local SQLite composition; deployed runtime provenance not verified | PARTIAL |
-| DEC-008 | PostgreSQL–SQLite parity harness, including all required scenarios | Web interop test covers peer SQLite synchronization; not the full canonical PostgreSQL parity suite | GAP |
+| DEC-001 | At most one verified/effective tenant–legal-party binding at a time; retain versioned history and evidence | Web schema has no canonical binding-version entity | GAP |
+| DEC-002 | At most one participant per (tenant, transaction); multiple independent Supplier tenants may participate | Web `commercial_transactions` is Buyer/Seller tenant-column based; no canonical `transaction_participants` model | GAP |
+| DEC-003 | Operational access is site-scoped; transaction-wide access is only an explicit bounded exception; NULL site is not unrestricted | Web route authorization does not evidence canonical site-link/assignment scope | GAP |
+| DEC-004 | Normalized permission-action vocabulary shared across platforms | No canonical action catalog/assignment-action enforcement evidenced | GAP |
+| DEC-005 | Bilateral Buyer/Seller activation approval; explicit independent Supplier approval and bounded scope | Web model does not evidence participant lifecycle approval or Supplier participation controls | GAP |
+| DEC-006 | PostgreSQL RLS design, non-bypass app role, server context, read/write policies and negative tests | Staging public schema currently has no application tables or policies; Mobile disposable fixture remains distinct from staging | OPEN |
+| DEC-007 | Actual SQLite runtime schema provenance per platform | Web source establishes SQLite startup code only; live runtime file/version/connection inventory not verified | PARTIAL |
+| DEC-008 | PostgreSQL–SQLite parity using same corpus and pinned engines | Mobile disposable harness evidence is partial; Web's legacy peer interop is not canonical parity | OPEN |
 
 ### 8.1 Cross-repository contract requirements
 
@@ -516,3 +516,132 @@ This document records findings, proposals, acceptance criteria, and open decisio
 
 ---
 **End of document.**
+
+
+## 13. Independent review and cross-platform / staging reconciliation addendum
+
+- **Review date:** 2026-11-10
+- **Review scope:** Read-only review of this document plus Mobile, Desktop and Supabase staging evidence.
+- **No implementation authorization:** This addendum does not authorize DDL, migration, grants, RLS changes, application code changes, merge or deployment.
+
+### 13.1 Review of this document — corrections and quality findings
+
+The original six-workstream assessment is directionally sound: Web is not yet a PostgreSQL-authoritative API, and its peer-sync paths must not be treated as transaction authority. The following corrections are material and supersede inconsistent statements earlier in this document:
+
+1. **DEC mapping correction (HIGH documentation defect).** The original Section 8 table incorrectly assigned meanings to DEC-001–DEC-005. The authoritative Mobile register `CANONICAL-SCHEMA-DECISION-REGISTER-001.md` defines:
+   - DEC-001: versioned tenant–legal-party binding cardinality/history.
+   - DEC-002: one participant per `(tenant_id, transaction_id)`; independent Supplier tenants may each participate.
+   - DEC-003: site-scoped operational access; transaction-wide scope only as an explicit bounded exception; NULL site is not unrestricted.
+   - DEC-004: normalized canonical permission-action vocabulary.
+   - DEC-005: bilateral Buyer/Seller activation approval and explicit independent Supplier participation approval.
+   The corrected matrix in Section 8 now follows that register. Other canonical domain invariants (legal party distinct from tenant; Buyer/Seller/Supplier independent tenants; participant/site/membership composite relationships) are captured in the GH-04 contract and canonical participant specification, but must not be misattributed to a different DEC number.
+
+2. **OpenAPI finding refinement (HIGH).** Web does have `docs/openapi.yaml`. It is not absent: it is a legacy API description for peer-local SQLite catalogue/inquiry and shared-secret inquiry sync. It does not describe the canonical transaction/participant/site/assignment/command API. WEB-API-003 is therefore restated as a stale/incomplete contract, not an unverified artifact.
+
+3. **Evidence boundary retained.** The eight-table Web inventory remains a source-level inventory (four base tables plus four tenant-migration tables). It is not a live SQLite catalog inventory. The runtime schema and database path claims remain limited to the inspected source code.
+
+### 13.2 Cross-platform baseline
+
+| Platform | Repository and reviewed baseline | Observed architecture | Reconciliation result |
+|---|---|---|---|
+| Web | `muchlisbstg/export-client-web-sync`, main `836821995c58293edadc982ae89f5519e1d4076b` | Express 5 + better-sqlite3; Supabase token verification; SQLite membership resolver; local tenant/transaction data; inquiry and tenant peer sync | NOT READY; legacy API/OpenAPI and sync authority gaps |
+| Mobile | `muchlisbstg/export-client-mobile-sync`, review branch `review/p0-domain-schema-readonly-2026-11-10`, HEAD `f4a06acf3bcea0a9ba85325c1bcd196c0dcd3726` | Expo/React Native client with Node/Express SQLite API; reviewed canonical domain and key/constraint specifications are design-only | Domain decisions DEC-001–005 approved; DEC-006–008 remain open |
+| Desktop | `muchlisbstg/export-client-desktop-sync`, main `3cb71f658712ee6c2b60d33b339a9600c09f15d6` | Electron + React + local Express + better-sqlite3; local API defaults to loopback and persistent app user-data DB; Supabase Auth session/admin endpoints; SQLite tenant membership path; peer sync | NOT READY; local SQLite remains data store and local API is not the shared authoritative transaction service |
+
+Evidence links:
+- [Mobile canonical decision register](https://github.com/muchlisbstg/export-client-mobile-sync/blob/review/p0-domain-schema-readonly-2026-11-10/docs/reviews/p0/CANONICAL-SCHEMA-DECISION-REGISTER-001.md)
+- [Mobile participant relationship specification](https://github.com/muchlisbstg/export-client-mobile-sync/blob/review/p0-domain-schema-readonly-2026-11-10/docs/reviews/p0/CANONICAL-PARTICIPANT-RELATIONSHIP-SPEC-001.md)
+- [Mobile canonical key/constraint mapping](https://github.com/muchlisbstg/export-client-mobile-sync/blob/review/p0-domain-schema-readonly-2026-11-10/docs/reviews/p0/CANONICAL-ENTITY-KEY-CONSTRAINT-MAPPING-001.md)
+- [Mobile DEC-006–008 evidence review](https://github.com/muchlisbstg/export-client-mobile-sync/blob/review/p0-domain-schema-readonly-2026-11-10/docs/reviews/p0/DEC-006-008-EVIDENCE-REVIEW-001.md)
+- [Mobile GH-04 cross-platform API contract](https://github.com/muchlisbstg/export-client-mobile-sync/blob/review/p0-domain-schema-readonly-2026-11-10/docs/reviews/p0/GH-04-CANONICAL-CROSS-PLATFORM-API-CONTRACT-001.md)
+- [Desktop package manifest](https://github.com/muchlisbstg/export-client-desktop-sync/blob/main/package.json)
+- [Desktop local API and sync implementation](https://github.com/muchlisbstg/export-client-desktop-sync/blob/main/electron/local-api.ts)
+- [Desktop Supabase Auth adapter](https://github.com/muchlisbstg/export-client-desktop-sync/blob/main/electron/auth.ts)
+- [Desktop README](https://github.com/muchlisbstg/export-client-desktop-sync/blob/main/README.md)
+- [Web legacy OpenAPI](https://github.com/muchlisbstg/export-client-web-sync/blob/main/docs/openapi.yaml)
+
+### 13.3 Cross-platform reconciliation findings
+
+| ID | Severity | Finding | Required disposition |
+|---|---|---|---|
+| XPLAT-001 | CRITICAL | All three platforms still carry local SQLite backend/API behavior; none is evidenced as using one shared PostgreSQL-authoritative transaction API. | Retain SQLite only for cache/offline/outbox; route final shared commands through authoritative API |
+| XPLAT-002 | HIGH | Mobile DEC-001–005 are approved domain rules, but the original Web DEC mapping was incorrect. | Corrected above; treat Mobile register as canonical DEC numbering |
+| XPLAT-003 | HIGH | Mobile GH-04 defines the proposed shared command contract, but route-by-route implementation and contract tests across all three clients are not evidenced. | Adopt only after API owner review and cross-platform contract tests |
+| XPLAT-004 | HIGH | Desktop README says the backend has no login/auth, while `electron/local-api.ts` now exposes Supabase Auth session/admin endpoints and `electron/auth.ts` implements token verification plus `ADMIN_USER_IDS`. This is documentation drift; these endpoints do not prove complete authorization on all local API routes. | Reconcile README and route-level auth coverage; do not treat the auth session endpoint as membership authorization |
+| XPLAT-005 | CRITICAL | Desktop local API stores inquiries in SQLite and has no evidence of a PostgreSQL transaction pool/context or authoritative RLS-backed transaction service. | Same backend integration gate as Web/Mobile |
+| XPLAT-006 | HIGH | Web and Desktop outbound inquiry sync now send `x-sync-peer`, but the Web receiver's inspected inquiry route still derives origin from payload `originNodeId`; sender header alone is not receiver authentication. | Authenticate peer identity at receiver and bind origin to authenticated peer |
+| XPLAT-007 | HIGH | Web tenant sync bundle can carry tenant, membership and transaction rows; the canonical GH-04 contract says peer sync must not replicate authoritative transaction decisions. | Replace generic row replication with server-validated commands/events; prohibit membership mutation through sync |
+| XPLAT-008 | HIGH | Mobile canonical specification has more complete participant/site/membership composite relationships than current Web/Desktop SQLite domain models. | Reconcile physical data ownership and migration mapping before implementation |
+
+### 13.4 Supabase staging DB-01 — read-only inventory result
+
+**Project:** `export-client-staging`  
+**Project ref:** `utvxuzmtevnmrcpxfpaa`  
+**Status at audit:** `ACTIVE_HEALTHY`  
+**PostgreSQL:** 17.11.0.011 (engine 17), region `ap-south-1`  
+**Audit execution role:** `postgres` (privileged inspection context)
+
+Read-only results captured on 2026-11-10:
+
+| DB-01 item | Observed result | Interpretation |
+|---|---|---|
+| Public application tables | 0 | No application schema objects currently exist in `public` |
+| Supabase migration history | 0 entries | No project migration ledger entries were returned |
+| Public schema RLS policies | 0 | No application RLS policy coverage exists yet; no public application tables were found |
+| Public table grants | 0 rows | No public application table grants exist |
+| Public application constraints/indexes | Not applicable | No public application tables to inventory |
+| Runtime application schema | Not present in public | Canonical domain schema has not been deployed to this staging project |
+
+Managed Supabase schemas were also observed and must not be confused with application schema coverage: `auth` has 27 tables (16 with RLS enabled); `storage` has 10 tables (10 with RLS enabled); `realtime` has 3 tables (1 with RLS enabled). These managed service tables are not the project's canonical tenant/business schema. No app-owned RLS policy is evidenced by these counts.
+
+**DB-01 disposition:** baseline blank-state inventory complete; canonical application schema/migration audit is BLOCKED because there are no application tables or migration entries to inspect. This is not a schema pass.
+
+### 13.5 Supabase staging SEC-01 — read-only security inventory result
+
+Observed built-in role attributes:
+
+| Role | SUPERUSER | BYPASSRLS | Audit implication |
+|---|---:|---:|---|
+| `anon` | false | false | Non-bypass built-in role |
+| `authenticated` | false | false | Non-bypass built-in role |
+| `service_role` | false | true | RLS-bypass privileged role; must not be the ordinary API role |
+| `postgres` | false | true | Privileged database owner/inspection role; not a valid least-privilege application role |
+| `supabase_admin` | true | true | Managed administrative role; not an application role |
+| `authenticator` | false | false | Connection/authenticator role, not the domain resolver role |
+
+No project-specific application API/resolver roles or grants over application tables were evidenced. The audit SQL ran as `postgres`, so these results do **not** prove the privileges of a future application pool role.
+
+Supabase Security Advisor returned one warning:
+- `auth_leaked_password_protection`: leaked-password protection disabled.
+
+This warning is a project Auth configuration hardening item; no setting was changed during this review.
+
+**SEC-01 disposition:** initial built-in role and empty-public-grant inventory complete; application role/grant/RLS review is BLOCKED until an application schema and explicitly approved non-bypass role design exist. Do not solve this by using `service_role` or `postgres` for ordinary API requests.
+
+### 13.6 Consolidated cross-platform and staging gate
+
+| Gate | Result | Why it remains open |
+|---|---|---|
+| Canonical domain DEC-001–005 | APPROVED (logical domain only) | Physical schema and implementation not yet proven |
+| DEC-006 RLS | OPEN / BLOCKED | Staging has no app tables/policies; role design and API integration not tested there |
+| DEC-007 SQLite provenance | OPEN | Source schemas exist, but live runtime DB identity/version/per-connection FK proof is incomplete for all platforms |
+| DEC-008 PostgreSQL–SQLite parity | OPEN | Mobile disposable harness evidence is partial; no approved full cross-platform corpus run against actual authoritative API |
+| Web PostgreSQL API readiness | NOT READY | SQLite runtime, stale OpenAPI, tenant resolver and sync authority gaps |
+| Desktop PostgreSQL API readiness | NOT READY | SQLite local API and incomplete route-level authorization |
+| Mobile PostgreSQL API readiness | NOT READY | SQLite API/runtime remains; canonical specification is not implementation evidence |
+| Schema freeze | NOT APPROVED | Multiple CRITICAL/HIGH gates remain open |
+
+### 13.7 Required next evidence gates (no implementation yet)
+
+1. Preserve DB-01/SEC-01 read-only results as the empty staging baseline; do not create a schema merely to make the audit non-empty.
+2. Finalize the canonical API contract from Mobile GH-04 with explicit API owner, route mapping and OpenAPI versioning across Web/Mobile/Desktop.
+3. Complete source-level route and data-ownership mapping for Desktop and Web; correct Desktop README drift and Web OpenAPI drift in a separately approved documentation change.
+4. Define the non-bypass application role and resolver architecture only after the canonical schema and security boundary are approved; prove no ordinary request uses `service_role`, `postgres`, SUPERUSER or BYPASSRLS.
+5. Design and test actual PostgreSQL RLS policies on disposable PostgreSQL using synthetic data and the real non-bypass API role; do not treat managed Supabase schema policies as application RLS coverage.
+6. Complete DEC-007 runtime provenance and DEC-008 full PostgreSQL/SQLite parity corpus with pinned versions and artifacts.
+7. Re-run end-to-end negative-access, forged-context, pool-reset, concurrency, sync provenance and offline replay tests against the actual production API composition.
+8. Obtain architecture, security, database, product and relevant legal/Syariah approvals before schema freeze or implementation authorization.
+
+**Final disposition remains: NOT READY — DO NOT FREEZE SCHEMA; DO NOT APPROVE PRODUCTION POSTGRESQL IMPLEMENTATION.**
+
+The staging project being ACTIVE_HEALTHY only means the database is available. It does not mean the canonical application schema, role model, RLS policies, API pool/context or parity evidence exist.
