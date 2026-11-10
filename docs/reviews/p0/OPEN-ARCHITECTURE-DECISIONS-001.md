@@ -124,3 +124,25 @@ A deferred decision must include a safe interim rule and the scope it blocks. Do
 **Implementation status:** NOT AUTHORIZED. This is an architecture decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
 
 **Follow-on evidence required:** Tests for unauthorized tenant selection, inactive/revoked membership, cross-tenant resource access, stale session/token context after switching, cache isolation, and audit attribution.
+
+
+### OD-004 — Tenant context expiry and revocation
+
+**Status:** APPROVED  
+**Decision:** Active tenant contexts must be time-bounded and subject to server-side validation and revocation. Token expiry alone is insufficient to enforce membership or permission changes.
+
+**Approved controls:**
+- Active tenant contexts have a bounded lifetime.
+- Sensitive requests validate the authenticated session, active tenant context, and current membership status server-side.
+- Suspended, revoked, or expired memberships immediately lose access once the server recognizes the status change; access must fail closed.
+- Role or permission changes invalidate affected authorization contexts and cached authorization decisions.
+- Logout, session revocation, and successful tenant switching terminate or replace the applicable context.
+- Revocation/version checks are server-authoritative; expiry-only token validation is insufficient.
+- Expiry, revocation, and invalidation events must be attributable and auditable.
+
+**Decision note:** User approval (“Ya”) accepts the recommendation as stated; no additional qualification was supplied.
+
+**Decision authority:** User approval recorded in this conversation.  
+**Implementation status:** NOT AUTHORIZED. This is an architecture decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
+
+**Follow-on evidence required:** Tests for expired context, membership suspension/revocation, role/permission change invalidation, logout, tenant switching, stale tokens, cache invalidation, and fail-closed behavior.
