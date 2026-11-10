@@ -22,6 +22,8 @@ This directory is the cross-platform review package for:
 6. [Open architecture decisions](./OPEN-ARCHITECTURE-DECISIONS-001.md)
 7. [Implementation readiness gates](./IMPLEMENTATION-READINESS-GATES-001.md)
 8. [Source and test evidence reconciliation](./EVIDENCE-RECONCILIATION-001.md)
+9. [Canonical PostgreSQL–SQLite schema specification](./CANONICAL-SCHEMA-SPECIFICATION-POSTGRESQL-SQLITE-001.md)
+10. [Canonical schema decision register DEC-001–DEC-008](./CANONICAL-SCHEMA-DECISION-REGISTER-001.md)
 
 ## Review sequence
 
