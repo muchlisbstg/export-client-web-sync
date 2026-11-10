@@ -1,7 +1,7 @@
 # SCHEMA-API-PARITY-REVIEW-001 — Cross-Platform Data and API Parity
 
-**Version:** 1.0-draft  
-**Status:** PARITY NOT ACHIEVED  
+**Version:** 1.1-draft  
+**Status:** SOURCE-LEVEL PARITY NOT ACHIEVED — EVIDENCE RECONCILED  
 **Baseline:** 2026-11-10 read-only audit
 
 ## 1. Database topology observed
@@ -97,3 +97,43 @@ An empty security-advisor finding list is not evidence of correct RLS when the d
 ## 8. Review conclusion
 
 **PARITY NOT ACHIEVED.** The findings block a claim of cross-platform implementation readiness until the critical ownership, migration, and API-contract gaps are resolved or formally scoped out with an approved architecture decision.
+
+
+## 9. Source-pinned evidence addendum
+
+The canonical source index is [EVIDENCE-RECONCILIATION-001](./EVIDENCE-RECONCILIATION-001.md).
+
+| Evidence | Pinned source | Confirmed conclusion |
+|---|---|---|
+| EV-MOB-004 | Mobile main `0a3c595c6697f56d0cef8536c3b93c3886cc5ab1`, `scripts/migrate-tenant-isolation.mjs#L7-L9`, `#L85-L160`, package.json | Migration is a separate CLI script; Mobile `dev:api` starts `server/index.mjs`; startup invocation is not evidenced |
+| EV-MOB-005 | Mobile main, `docs/p0-source-schema-reconciliation-2026-11-04.md#L41-L45`, `#L74-L80` | Five source-level integrity gaps are documented |
+| EV-MOB-006 | Mobile main, `test/schema-reconciliation-contract.test.mjs#L1-L37` | Synthetic test source asserts exactly five findings and read-only inspection; no execution result is asserted here |
+| EV-WEB-001/002 | Web main `836821995c58293edadc982ae89f5519e1d4076b`, `server/index.ts#L116-L123`, `#L186-L245`, `docs/openapi.yaml#L12-L116` | Source contains tenant/transaction routes omitted from checked-in OpenAPI |
+| EV-WEB-003 / EV-DESK-001 | Web/Desktop migration scripts and package.json at their pinned main SHAs | Migration scripts exist; automatic startup invocation is not established by package scripts |
+
+### 9.1 Clarification of migration finding
+
+The Mobile source creates core catalog/inquiry/sync tables during API startup and has a separate tenant migration script. The inspected `dev:api` command invokes `node server/index.mjs`, not `scripts/migrate-tenant-isolation.mjs`. Therefore:
+
+- **Confirmed:** a migration script exists and is testable as a separate operation.
+- **Not established:** the application startup path automatically applies tenant migration.
+- **Not established:** the deployed service uses this exact package command or DB path.
+- **Not established:** physical schema, migration history, or live DB matches source.
+
+No migration was run and no physical database was modified or inspected in this reconciliation.
+
+### 9.2 Five Mobile integrity gaps
+
+| ID | Required invariant | Current source evidence |
+|---|---|---|
+| SG-001 | Transaction-party bridge proves tenant is a Buyer or Seller participant | Missing per EV-MOB-005 |
+| SG-002 | Access assignment composite FK binds tenant + transaction | Missing per EV-MOB-005 |
+| SG-003 | Access assignment composite FK binds tenant + site | Missing per EV-MOB-005 |
+| SG-004 | Transaction-site link composite FK binds tenant + transaction | Missing per EV-MOB-005 |
+| SG-005 | Transaction-site link composite FK binds tenant + site | Missing per EV-MOB-005 |
+
+These are source-level findings and design requirements, not DDL instructions or permission to create a migration.
+
+### 9.3 Database parity disposition
+
+**PARITY NOT ACHIEVED.** Source evidence is now pinned, but physical SQLite schema, live runtime provenance, migration history, authoritative database topology, and PostgreSQL/Supabase RLS remain unverified. A source-level test definition is not a physical database audit.
