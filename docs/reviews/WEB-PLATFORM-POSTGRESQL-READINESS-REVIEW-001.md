@@ -460,7 +460,7 @@ Before Web implementation is approved, reconcile:
 | WEB-DB-005 | MEDIUM | DB | Runtime schema setup is not a versioned PostgreSQL migration chain | Migration/version governance |
 | WEB-AUTH-004 | MEDIUM | AUTH | Tenant selector supplied in request header | Server-side selector validation preserved |
 | WEB-AUTH-005 | MEDIUM | AUTH | Auth identity object carries local admin/customer role | Separate verified identity and resolved authorization context |
-| WEB-API-003 | HIGH | API | Canonical OpenAPI contract not verified/reconciled | Approved versioned API specification |
+| WEB-API-003 | HIGH | API | Legacy OpenAPI is stale/incomplete against canonical API contract | Approved versioned API specification |
 | WEB-API-004 | MEDIUM | API | Public inquiry/tracking policy requires explicit decision | Product/security approval and tests |
 | WEB-SYNC-006 | MEDIUM | SYNC | Interop test uses payload origin as peer header | Independent peer authentication test |
 
