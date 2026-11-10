@@ -1,7 +1,7 @@
 # UI-API-CONTRACT-MATRIX-001 — Cross-Platform API Contract Matrix
 
-**Version:** 1.0-draft  
-**Status:** PENDING REVIEW  
+**Version:** 1.1-draft  
+**Status:** SOURCE EVIDENCE RECONCILED — PER-SCREEN TRACEABILITY OPEN  
 **Baseline:** 2026-11-10 read-only source audit
 
 ## 1. Status definitions
@@ -112,3 +112,37 @@ The screen inventory and platform responsibilities are defined in [UI-SCREEN-SPE
 - Unauthorized requests fail closed.
 
 **Status:** audit matrix only; not an approved implementation contract.
+
+
+## 9. Source-pinned evidence reconciliation
+
+Use [EVIDENCE-RECONCILIATION-001](./EVIDENCE-RECONCILIATION-001.md) as the canonical evidence index. Material source references:
+
+| Platform | Source reference | Commit SHA | Evidence conclusion |
+|---|---|---|---|
+| Mobile | `server/index.mjs#L296-L340`, `#L385-L408` | `0a3c595c6697f56d0cef8536c3b93c3886cc5ab1` | Enterprise session remains; tenant sync and transaction writes return 410; duplicate transaction GET registrations are visible |
+| Mobile | `server/supply-chain-routes.mjs#L299-L300` | `0a3c595c6697f56d0cef8536c3b93c3886cc5ab1` | Supply-chain transaction GET handlers are registered before the later index-level GET handlers |
+| Mobile | `server/authorization.mjs#L17-L78` | `0a3c595c6697f56d0cef8536c3b93c3886cc5ab1` | Current helper is enterprise/single-enterprise-oriented |
+| Web | `server/index.ts#L116-L123`, `#L186-L245` | `836821995c58293edadc982ae89f5519e1d4076b` | Tenant/transaction source routes exist; runtime readiness and authorization parity are not thereby proven |
+| Web | `docs/openapi.yaml#L12-L116` | `836821995c58293edadc982ae89f5519e1d4076b` | OpenAPI lists only health, products, inquiries, tracking, and inquiry sync; tenant/transaction routes are omitted |
+
+### 9.1 Corrections to the earlier audit matrix
+
+- BLK-004 is **CONFIRMED** at the pinned Mobile main source: the same transaction list/detail GET method-path pairs are registered by the supply-chain route registrar and again in `server/index.mjs`. The earlier endpoint inventory document's statement that duplicate registrations had been removed is stale relative to this pinned source.
+- Mobile transaction write and tenant-sync status are confirmed as 410 at the pinned source, not merely classified from a historical API matrix.
+- Web's OpenAPI document is demonstrably narrower than the source route inventory. Until regenerated/reconciled, it must not be treated as the canonical complete API contract.
+- The API matrix describes screen families (WEB-001–015, MOB-001–013, DES-001–010). It does **not** yet map every individual screen ID to exact method/path, request/response schema, error contract, and authorization preconditions.
+
+### 9.2 Required per-screen acceptance record
+
+For each of the 38 screen IDs, record:
+
+1. Screen ID and actor/role.
+2. Active tenant and resource/transaction/site scope.
+3. Read and mutation method/path dependencies.
+4. Request, response, error code, and version contract.
+5. Required authorization predicates and audit behavior.
+6. Loading, empty, denied, conflict, offline, and retry behavior.
+7. Source evidence or explicit PROPOSED/MISSING classification.
+
+**Disposition:** source evidence for the listed endpoint findings is reconciled. Individual screen-to-endpoint traceability remains OPEN and must be completed or formally deferred before final package approval.
