@@ -33,7 +33,7 @@ No level is granted automatically by CI PASS or screen completion.
 
 ### Gate B — Authorization
 
-- [ ] All 42 NAX cases and 6 PAX controls are reviewed and executable.
+- [ ] All 47 NAX cases and 15 PAX controls are reviewed and executable.
 - [ ] Backend enforcement is proven independently of UI.
 - [ ] No cross-tenant data leakage.
 - [ ] Revocation, stale context, and offline replay semantics are approved.
@@ -73,9 +73,9 @@ No level is granted automatically by CI PASS or screen completion.
 | BLK-001 | Mobile single-enterprise authorization | Critical | Align with approved multi-tenant architecture |
 | BLK-002 | Mobile transaction write endpoints retired | Critical | Provide supported authorized transaction contract |
 | BLK-003 | Mobile tenant sync retired | High | Define and verify tenant sync |
-| BLK-004 | Duplicate Mobile transaction route registration | High | Prove route order and active handler |
+| BLK-004 | Duplicate Mobile transaction GET route registrations confirmed | High | Consolidate to one authoritative handler and pass route-order/handler-ownership tests |
 | BLK-005 | Five composite integrity gaps | Critical | Enforce participant and tenant/site referential integrity |
-| BLK-006 | Runtime migration path unverified | Critical | Prove fresh install and upgrade |
+| BLK-006 | Migration script exists but invocation from Mobile startup path is not evidenced | Critical | Approve a migration runner and prove fresh install/upgrade on disposable fixtures |
 | BLK-007 | Contract/scope approval APIs missing | Critical | Define immutable contract and bilateral approval |
 | BLK-008 | Payment ledger/guarantee APIs missing | Critical | Define financial and guarantee lifecycle |
 | BLK-009 | Release instruction API missing | Critical | Define server-enforced release authorization |
@@ -111,3 +111,19 @@ Candidate-branch evidence must never be attributed to main. A deployment artifac
 **R0 — NOT ASSESSED.**
 
 The source audit establishes material blockers but does not authorize implementation. The next formal decision is approval of the integrated review package, followed by closure or disposition of blockers and open decisions.
+
+
+## 8. Evidence reconciliation disposition — 2026-11-10
+
+See [EVIDENCE-RECONCILIATION-001](./EVIDENCE-RECONCILIATION-001.md) for source-pinned commit, blob, and line references.
+
+- BLK-001, BLK-002, BLK-003, BLK-004, BLK-005, and BLK-006 are supported by pinned Mobile source evidence.
+- BLK-004 is confirmed: duplicate transaction GET registrations exist in the same Mobile main source baseline.
+- BLK-005 is supported by source reconciliation and a test definition that asserts five schema findings; execution on the pinned main SHA is not claimed.
+- BLK-006 is a startup-path evidence gap: the separate migration script exists, but the package API start command does not invoke it.
+- Web OpenAPI drift is supported by pinned source and OpenAPI files.
+- The integrated authorization suite now specifies 47 negative cases and 15 positive controls; execution remains NOT EXECUTED.
+- Individual 38-screen API traceability remains open.
+- Physical DB/RLS, runtime migration, live login, and production-like E2E are not certified by repository source evidence.
+
+**Readiness remains R0 — NOT ASSESSED.** Source reconciliation improves evidence quality; it does not close implementation blockers or grant implementation authorization.
