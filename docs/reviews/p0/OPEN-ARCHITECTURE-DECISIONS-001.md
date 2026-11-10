@@ -102,3 +102,25 @@ A deferred decision must include a safe interim rule and the scope it blocks. Do
 **Implementation status:** NOT AUTHORIZED. This is an architecture decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
 
 **Follow-on evidence required:** A permission matrix for `membership.admin`, tests for delegated-authority ceilings, cross-tenant administration denial, self-escalation denial, revocation, and complete audit attribution.
+
+
+### OD-003 — Tenant switching and active context
+
+**Status:** APPROVED  
+**Decision:** A user with multiple tenant memberships must explicitly select an active tenant context. The server is authoritative for establishing and validating that context.
+
+**Approved controls:**
+- After authentication, the user selects an active tenant from eligible memberships.
+- The server validates that the selected membership exists, is active, and belongs to the authenticated user before establishing tenant context.
+- A tenant identifier supplied by the client is a context-selection input only; it is never proof of membership or authorization.
+- Every request is authorized against the server-validated active tenant context and applicable resource/transaction/site scopes.
+- A successful tenant switch replaces the prior active context; requests or credentials bound to the previous context must not remain usable as if the old context were active.
+- Context switching must not carry over permissions, resource access, or cached authorization decisions from the previous tenant.
+- Tenant switching and context establishment/replacement must be auditable.
+
+**Decision note:** User approval (“Y”) accepts the recommendation as stated; no additional qualification was supplied.
+
+**Decision authority:** User approval recorded in this conversation.  
+**Implementation status:** NOT AUTHORIZED. This is an architecture decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
+
+**Follow-on evidence required:** Tests for unauthorized tenant selection, inactive/revoked membership, cross-tenant resource access, stale session/token context after switching, cache isolation, and audit attribution.
