@@ -59,3 +59,25 @@ For each OD item, record:
 - ADR link and evidence references.
 
 A deferred decision must include a safe interim rule and the scope it blocks. Do not let implementation silently choose policy.
+
+
+## 6. Decision records
+
+### OD-001 — Multiple active roles per membership
+
+**Status:** APPROVED  
+**Decision:** One tenant membership may hold multiple active roles concurrently.
+
+**Approved controls:**
+- A user may hold separate memberships in different tenants.
+- Each membership may have multiple active roles.
+- Effective permissions are evaluated server-side from the active membership, role grants, and applicable transaction/site/time scopes.
+- Role combination must not create privilege escalation or bypass explicit permission boundaries.
+- Role grants, changes, expiry, and revocation require attributable audit records.
+
+**Decision note:** No additional condition or qualification was supplied.
+
+**Decision authority:** User approval recorded in this conversation.  
+**Implementation status:** NOT AUTHORIZED. This is an architecture decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
+
+**Follow-on evidence required:** Define deterministic permission-composition rules, conflict/deny precedence, scoped-role evaluation, and tests proving that combined roles cannot exceed the membership's permitted scope.
