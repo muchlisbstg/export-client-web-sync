@@ -1,7 +1,7 @@
 # UI-NEGATIVE-ACCESS-TEST-001 — Negative-Access Test Specification
 
-**Version:** 1.0-draft  
-**Status:** SPECIFICATION ONLY — NOT EXECUTED  
+**Version:** 1.1-draft  
+**Status:** CROSSWALK RECONCILED — SPECIFICATION ONLY — NOT EXECUTED  
 **Baseline:** AUTH-MOBILE-RECONCILIATION-001 and approved tenant architecture
 
 ## 1. Objective
@@ -78,6 +78,11 @@ Tests must assert backend outcomes and side effects. UI hiding is not sufficient
 | NAX-040 | Deep link bypasses UI navigation | Backend still denies | Critical |
 | NAX-041 | API/authorization service failure | Fail closed | Critical |
 | NAX-042 | Stale client authorization cache after revocation | Deny sensitive operation | Critical |
+| NAX-043 | Legacy enterprise role is the sole authority without a valid membership-bound role | 403 | Critical |
+| NAX-044 | Buyer and Seller participant tenant are identical or duplicate party records are inserted | Database reject; no transaction side effect | Critical |
+| NAX-045 | Inquiry ownership is inferred from email, creator, tracking code, or ambiguous legacy metadata | No ownership assignment; quarantine where ambiguous | Critical |
+| NAX-046 | Transaction participant and linked inquiry ownership are inconsistent | Reject; no cross-tenant disclosure | Critical |
+| NAX-047 | Duplicate transaction route handlers remain registered for the same method/path | CI/static contract failure; one authoritative handler required | High |
 
 ## 3. Positive controls
 
@@ -89,6 +94,15 @@ Tests must assert backend outcomes and side effects. UI hiding is not sufficient
 | PAX-004 | Authorized QC user operates at assigned site | Allow |
 | PAX-005 | Platform Admin with explicit permission performs permitted cross-tenant action | Allow and audit |
 | PAX-006 | Syariah Reviewer accesses review scope | Allow review/comment; deny execution authority |
+| PAX-007 | User with two active memberships switches tenant after fresh membership and permission validation | Allow only in selected tenant context |
+| PAX-008 | Site owner approves an external transaction-site link | Allow only for approved purpose and effective period |
+| PAX-009 | One site participates in multiple transactions with a distinct approved link for each | Allow only within each transaction link |
+| PAX-010 | Revoked site approval is reused | Deny subsequent site-bound operation |
+| PAX-011 | Assignment is constrained to active membership, participant, transaction, role, and site | Allow only when every relationship is valid |
+| PAX-012 | Inquiry remains with originating tenant until authorized transfer | Allow origin tenant; deny unauthorized transfer/read |
+| PAX-013 | Ambiguous legacy inquiry remains quarantined | Deny business access until evidence-backed assignment |
+| PAX-014 | Mandatory audit record commits atomically with sensitive mutation | Allow only when mutation and audit commit together |
+| PAX-015 | Contract-defined goods-release conditions are enforced independently of generic role access | Allow only when all applicable release conditions pass |
 
 ## 4. Test fixture requirements
 
@@ -106,7 +120,7 @@ Use separate tenants and deliberately colliding resource identifiers where possi
 
 ## 5. Acceptance criteria
 
-- All 42 negative cases and 6 positive controls are executed.
+- All 47 negative cases and 15 positive controls are executed.
 - Zero unauthorized access successes.
 - Zero cross-tenant data leakage.
 - Sensitive mutations produce traceable audit events.
@@ -118,4 +132,71 @@ Use separate tenants and deliberately colliding resource identifiers where possi
 
 ## 6. Execution status
 
-**NOT EXECUTED.** This document defines test intent and expected outcomes only. A green CI run elsewhere is not evidence that these 48 scenarios passed.
+**NOT EXECUTED.** This document defines test intent and expected outcomes only. A green CI run elsewhere is not evidence that these 62 scenarios passed.
+
+
+## 7. Architecture test-ID crosswalk
+
+The following crosswalk preserves the architecture document's NEG/POS IDs and the integrated suite's NAX/PAX IDs as separate namespaces. A mapping means scenario coverage is intended; it does not mean the test has run or passed.
+
+### 7.1 Architecture NEG to integrated NAX
+
+| AUTH-MOBILE NEG | Integrated NAX coverage | Coverage note |
+|---|---|---|
+| NEG-001 | NAX-001 | Unauthenticated protected request |
+| NEG-002 | NAX-003 | Missing/unknown/inactive tenant context |
+| NEG-003 | NAX-004 | Tenant switch without membership |
+| NEG-004 | NAX-002, NAX-005 | Expired session and revoked/inactive membership |
+| NEG-005 | NAX-004 | Unauthorized tenant switch |
+| NEG-006 | NAX-010 | Role from another tenant |
+| NEG-007 | NAX-018 | Role/assignment without valid membership |
+| NEG-008 | NAX-043 | Legacy enterprise role as sole authority |
+| NEG-009 | NAX-044 | Buyer and Seller tenant identity collision |
+| NEG-010 | NAX-006, NAX-013, NAX-014 | Nonparticipant and out-of-scope transaction access |
+| NEG-011 | NAX-009, NAX-014 | Third-party access without participant relationship |
+| NEG-012 | NAX-017 | Assignment tenant differs from participant |
+| NEG-013 | NAX-018 | Assignment grantee lacks active membership |
+| NEG-014 | NAX-044 | Duplicate Buyer/Seller participant |
+| NEG-015 | NAX-019, NAX-020, NAX-024 | Tenant/site mismatch |
+| NEG-016 | NAX-019, NAX-021 | External site without owner approval |
+| NEG-017 | NAX-012, NAX-020 | Pending/expired/revoked assignment or site scope |
+| NEG-018 | NAX-018, NAX-022 | Site assignment without active membership |
+| NEG-019 | NAX-024 | Cross-tenant site/resource access |
+| NEG-020 | NAX-019, NAX-020 | Unauthorized source/destination site |
+| NEG-021 | NAX-045 | Ownership must not be inferred |
+| NEG-022 | NAX-045 | Ambiguous legacy ownership quarantine |
+| NEG-023 | NAX-046 | Inquiry/transaction participant mismatch |
+| NEG-024 | NAX-047 | Duplicate route registration |
+| NEG-025 | NAX-037 | Audit persistence failure |
+| NEG-026 | NAX-012, NAX-034, NAX-042 | Revocation and stale authority |
+| NEG-027 | NAX-008, NAX-017 | Forged tenant/participant/site identifiers |
+| NEG-028 | NAX-025, NAX-031, NAX-032 | Release blocked by QC/role/contract condition |
+| NEG-029 | NAX-006, NAX-007 | Cross-party private document/inquiry access |
+| NEG-030 | NAX-042 | Stale cached permission after revocation |
+
+### 7.2 Architecture POS to integrated PAX
+
+| AUTH-MOBILE POS | Integrated PAX coverage |
+|---|---|
+| POS-001 | PAX-001 |
+| POS-002 | PAX-002 |
+| POS-003 | PAX-003 |
+| POS-004 | PAX-007 |
+| POS-005 | PAX-008 |
+| POS-006 | PAX-009 |
+| POS-007 | PAX-010 |
+| POS-008 | PAX-004 and PAX-011 |
+| POS-009 | PAX-012 |
+| POS-010 | PAX-013 |
+| POS-011 | PAX-014 |
+| POS-012 | PAX-015 |
+
+PAX-005 (Platform Administrator with explicit permission) and PAX-006 (Syariah Reviewer review-only scope) are additional integrated positive controls with no one-to-one POS identifier in the architecture document.
+
+### 7.3 Crosswalk acceptance
+
+- Every architecture NEG/POS scenario has an integrated suite mapping.
+- Integrated-only cases remain explicitly identified as additional coverage.
+- No mapping is counted as execution evidence.
+- The complete suite contains **47 negative cases and 15 positive controls**.
+- Execution status remains **NOT EXECUTED** until a run is tied to an exact candidate SHA and all required fixtures, side effects, and audit assertions are reported.
