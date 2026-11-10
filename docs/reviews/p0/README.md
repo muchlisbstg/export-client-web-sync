@@ -21,6 +21,7 @@ This directory is the cross-platform review package for:
 5. [Schema/API parity review](./SCHEMA-API-PARITY-REVIEW-001.md)
 6. [Open architecture decisions](./OPEN-ARCHITECTURE-DECISIONS-001.md)
 7. [Implementation readiness gates](./IMPLEMENTATION-READINESS-GATES-001.md)
+8. [Source and test evidence reconciliation](./EVIDENCE-RECONCILIATION-001.md)
 
 ## Review sequence
 
@@ -29,8 +30,10 @@ This directory is the cross-platform review package for:
 3. Approve negative-access scenarios and expected security outcomes.
 4. Review schema, referential integrity, migrations, and database topology.
 5. Resolve or formally defer open architecture decisions with named owners.
-6. Approve the integrated package.
-7. Only then assess implementation readiness against measured blockers.
+6. Reconcile source-pinned evidence and cross-document test identifiers.
+7. Complete or formally defer per-screen API traceability.
+8. Approve the integrated package.
+9. Only then assess implementation readiness against measured blockers.
 
 ## Governance boundary
 
