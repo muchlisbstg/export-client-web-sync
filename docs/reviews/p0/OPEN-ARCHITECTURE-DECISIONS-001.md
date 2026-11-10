@@ -167,3 +167,25 @@ A deferred decision must include a safe interim rule and the scope it blocks. Do
 **Implementation status:** NOT AUTHORIZED. This is an architecture/governance decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
 
 **Follow-on evidence required:** Delegator-authority validation, scope/expiry enforcement, revocation propagation, prohibited sub-delegation, contract-condition non-bypass, and audit attribution tests.
+
+### OD-006 — Emergency access (break-glass)
+
+**Status:** APPROVED  
+**Decision:** Emergency break-glass access is permitted only for defined critical incidents, under narrowly scoped, time-limited, strongly authenticated, and independently reviewable controls.
+
+**Approved controls:**
+- Emergency access may be invoked only for a documented critical incident meeting a defined break-glass criterion; the actor must provide a reason and incident/reference ID.
+- Access must be limited to the minimum tenant, resources, actions, and duration necessary to address the incident.
+- Step-up authentication, including MFA where supported, is required before activation.
+- Emergency access must not bypass contractual approval conditions, financial controls, Syariah governance boundaries, or server-side goods-release authorization.
+- All activation, access, actions, attempted actions, and termination events must be recorded in tamper-resistant audit records with actor, scope, timestamps, reason, and incident reference.
+- The emergency-access holder must not be able to alter or suppress the corresponding audit records.
+- Access must expire automatically at the end of its approved duration and be revocable earlier by an authorized independent authority.
+- Every use requires a post-incident review by an independent reviewer, with findings and remediation tracked to closure.
+
+**Decision note:** User approval (“Ya”) accepts the recommendation as stated; no additional qualification was supplied.
+
+**Decision authority:** User approval recorded in this conversation.  
+**Implementation status:** NOT AUTHORIZED. This is an architecture/security governance decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
+
+**Follow-on evidence required:** Break-glass eligibility criteria, minimum-scope enforcement, step-up authentication, automatic expiry, independent revocation, immutable audit evidence, and post-incident review tests/process records.
