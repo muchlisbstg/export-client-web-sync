@@ -210,3 +210,25 @@ A deferred decision must include a safe interim rule and the scope it blocks. Do
 **Implementation status:** NOT AUTHORIZED. This is an architecture decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
 
 **Follow-on evidence required:** Supplier tenant isolation, participant relationship validation, site/transaction scope enforcement, assignment expiry/revocation, denial of unrelated tenant data access, and audit attribution tests.
+
+### OD-008 — Assignment revocation during active handover
+
+**Status:** APPROVED  
+**Decision:** Revocation or expiry of an operational assignment immediately removes the affected actor's authority for new protected actions. Any active handover dependent on that assignment must be placed into a controlled suspended state until an authorized reassignment or other approved resolution is completed.
+
+**Approved controls:**
+- Revocation/expiry must deny new protected actions under the revoked assignment from the point the server recognizes the change.
+- An affected active handover must transition to `SUSPENDED_PENDING_REASSIGNMENT` (or an explicitly governed equivalent) and must not silently continue under stale authorization.
+- The system must not automatically transfer responsibility, custody, or authority to another Supplier or actor.
+- Existing evidence, completed activity, custody events, and audit history must be preserved; revocation must not erase or rewrite prior accountability.
+- Reassignment requires an authorized decision and a new explicit assignment with its own scope, effective period, and audit trail.
+- Goods, documents, and samples in custody must follow a controlled handover/chain-of-custody procedure identifying releasing and receiving parties, condition, timestamps, and evidence.
+- A new assignment alone does not authorize goods release. Release remains subject to the signed contract snapshot, applicable release conditions, and server-side release authorization.
+- Any emergency exception must follow the separately approved break-glass policy and cannot waive contractual, financial, legal, or Syariah controls.
+
+**Decision note:** User approval (“Ya”) accepts the recommendation as stated; no additional qualification was supplied.
+
+**Decision authority:** User approval recorded in this conversation.  
+**Implementation status:** NOT AUTHORIZED. This is an architecture/operations decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
+
+**Follow-on evidence required:** Immediate authorization denial after revocation, suspended handover state transition, no automatic responsibility transfer, custody/evidence preservation, authorized reassignment, and release-condition non-bypass tests.
