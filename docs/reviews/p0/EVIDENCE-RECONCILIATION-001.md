@@ -59,9 +59,9 @@ These baselines were re-read from GitHub branch references during this reconcili
 Two distinct test namespaces must remain distinguishable:
 
 - Architecture baseline: NEG-001–NEG-030 and POS-001–POS-012 in AUTH-MOBILE-RECONCILIATION-001.
-- Integrated cross-platform suite: NAX-001–NAX-042 and PAX-001–PAX-012 in UI-NEGATIVE-ACCESS-TEST-001 after this reconciliation.
+- Integrated cross-platform suite: NAX-001–NAX-047 and PAX-001–PAX-015 in UI-NEGATIVE-ACCESS-TEST-001 after this reconciliation.
 
-The NAX suite is an expanded integrated suite, not a renumbering or replacement of the architecture NEG suite. The crosswalk is maintained in UI-NEGATIVE-ACCESS-TEST-001. No test is marked passed solely because its scenario appears in either document.
+The NAX suite is an expanded integrated suite, not a renumbering or replacement of the architecture NEG suite. It now contains 47 negative cases and 15 positive controls. The crosswalk is maintained in UI-NEGATIVE-ACCESS-TEST-001. No test is marked passed solely because its scenario appears in either document.
 
 ## 6. Confirmed review findings and severity
 
