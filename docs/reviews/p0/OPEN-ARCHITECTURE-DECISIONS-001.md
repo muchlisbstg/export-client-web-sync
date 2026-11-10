@@ -146,3 +146,24 @@ A deferred decision must include a safe interim rule and the scope it blocks. Do
 **Implementation status:** NOT AUTHORIZED. This is an architecture decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
 
 **Follow-on evidence required:** Tests for expired context, membership suspension/revocation, role/permission change invalidation, logout, tenant switching, stale tokens, cache invalidation, and fail-closed behavior.
+
+### OD-005 — Authorized Representative delegation
+
+**Status:** APPROVED  
+**Decision:** Authorized Representative authority may be delegated only through an explicit, bounded, auditable delegation issued by an Authorized Representative whose own authority is active and covers the delegated action.
+
+**Approved controls:**
+- The delegator must have active authority covering the specific action and scope being delegated.
+- A delegation must explicitly identify the delegator, delegate, tenant, transaction (where applicable), permitted action/scope, effective date/time, expiry, and reason.
+- Delegated authority must not exceed the delegator's authority or override applicable law, governance rules, or the signed contract snapshot.
+- Sub-delegation is prohibited unless explicitly permitted by the governing authority and recorded as a separate authorized delegation.
+- Delegation must be revocable by an authority entitled to revoke it; revocation invalidates the delegated access for subsequent authorization checks.
+- Actions performed under delegation must record both the delegate and delegator, the delegation reference, action, scope, timestamp, and relevant audit/correlation reference.
+- Delegation does not replace or waive bilateral approval requirements, contract lifecycle conditions, or shipment release conditions established by the signed contract snapshot or applicable law.
+
+**Decision note:** User approval (“Ya”) accepts the recommendation as stated; no additional qualification was supplied.
+
+**Decision authority:** User approval recorded in this conversation.  
+**Implementation status:** NOT AUTHORIZED. This is an architecture/governance decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
+
+**Follow-on evidence required:** Delegator-authority validation, scope/expiry enforcement, revocation propagation, prohibited sub-delegation, contract-condition non-bypass, and audit attribution tests.
