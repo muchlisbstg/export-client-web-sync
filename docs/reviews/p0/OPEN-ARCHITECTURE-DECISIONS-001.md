@@ -189,3 +189,24 @@ A deferred decision must include a safe interim rule and the scope it blocks. Do
 **Implementation status:** NOT AUTHORIZED. This is an architecture/security governance decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
 
 **Follow-on evidence required:** Break-glass eligibility criteria, minimum-scope enforcement, step-up authentication, automatic expiry, independent revocation, immutable audit evidence, and post-incident review tests/process records.
+
+### OD-007 — Supplier hybrid tenant and operational access semantics
+
+**Status:** APPROVED — CLARIFICATION OF THE PREVIOUSLY APPROVED SUPPLIER HYBRID ARCHITECTURE  
+**Decision:** Supplier retains an independent tenant identity. Operational access to Buyer/Seller transaction and site resources is granted only through explicit, active transaction-participant and site-assignment relationships. This clarification does not reopen or reverse the previously approved hybrid architecture.
+
+**Approved controls:**
+- Supplier retains its own tenant, memberships, and tenant administration boundary.
+- Supplier participates in a transaction only through an explicit transaction-participant relationship.
+- Access to a Buyer/Seller site or operational resource requires an explicit, active assignment identifying the relevant supplier identity, transaction, site, permitted scope, and validity period.
+- A site assignment grants access only to the assigned operational scope; it does not grant general access to the site-owning tenant or its unrelated data.
+- Revoking or expiring an assignment terminates the corresponding operational access without deleting the Supplier tenant identity, membership history, transaction history, or audit evidence.
+- Cross-tenant access is authorized server-side, fail-closed, and checked against current participant and assignment relationships on each protected operation.
+- Creation, modification, activation, expiry, and revocation of participant/assignment relationships must be attributable and auditable.
+
+**Decision note:** User approval (“Ya”) accepts this clarification as stated. The previously approved Supplier hybrid architecture remains the governing domain decision.
+
+**Decision authority:** User approval recorded in this conversation.  
+**Implementation status:** NOT AUTHORIZED. This is an architecture decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
+
+**Follow-on evidence required:** Supplier tenant isolation, participant relationship validation, site/transaction scope enforcement, assignment expiry/revocation, denial of unrelated tenant data access, and audit attribution tests.
