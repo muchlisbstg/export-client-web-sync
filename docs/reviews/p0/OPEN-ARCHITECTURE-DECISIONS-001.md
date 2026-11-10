@@ -81,3 +81,24 @@ A deferred decision must include a safe interim rule and the scope it blocks. Do
 **Implementation status:** NOT AUTHORIZED. This is an architecture decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
 
 **Follow-on evidence required:** Define deterministic permission-composition rules, conflict/deny precedence, scoped-role evaluation, and tests proving that combined roles cannot exceed the membership's permitted scope.
+
+
+### OD-002 — Membership administrator governance
+
+**Status:** APPROVED  
+**Decision:** Membership administration may be performed only by a Tenant Owner or Tenant Administrator holding the explicit `membership.admin` permission.
+
+**Approved controls:**
+- The actor must have an active membership in the target tenant.
+- The actor may grant, change, suspend, or revoke membership roles only within the authority explicitly delegated to that actor.
+- An administrator cannot grant permissions or roles exceeding their own delegated administrative authority.
+- Membership administration must be tenant-scoped and fail-closed.
+- Every membership/role change must record actor, target membership, tenant, action, before/after state, timestamp, reason, and correlation/audit reference.
+- The system must prevent self-escalation and unauthorized privilege transfer.
+
+**Decision note:** “Ya” accepts the recommendation as stated; no additional qualification was supplied.
+
+**Decision authority:** User approval recorded in this conversation.  
+**Implementation status:** NOT AUTHORIZED. This is an architecture decision only; it does not authorize code changes, schema/DDL, migrations, tests against shared/live systems, PR, merge, or deployment.
+
+**Follow-on evidence required:** A permission matrix for `membership.admin`, tests for delegated-authority ceilings, cross-tenant administration denial, self-escalation denial, revocation, and complete audit attribution.
