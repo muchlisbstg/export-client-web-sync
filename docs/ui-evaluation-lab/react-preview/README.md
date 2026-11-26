@@ -79,3 +79,12 @@ The product-specific enquiry is browser-local demonstration only. It does not tr
 - An Australian business address, regional illustration or state profile is not proof of country of origin for a specific animal, product or shipment.
 - Actual origin claims and labelling must be substantiated against the relevant product lot and destination-market rules. Property, livestock, processing, halal and export records must reconcile to the same consignment.
 - No internal farm/abattoir operational information is exposed. No production, inventory, supplier or facility data is invented.
+
+## Quality & halal assurance evaluation
+
+- Buyer-facing assurance workspace with separate Halal, Quality, Cold chain and Traceability evidence domains.
+- Evidence controls include certificate issuer recognition and scope, slaughter-process assurance, segregation controls, product cut specification, grading/eating-quality evidence, food-safety records, cold-chain monitoring and lot-to-consignment reconciliation.
+- Search, domain filters and expandable acceptance criteria expose required evidence scope and linkage.
+- Local-only buyer review scenario accepts a synthetic lot reference and destination; no data is transmitted or persisted.
+- All controls are explicitly NOT CONNECTED or NOT PROVIDED. Zero verified records are represented. No halal certification, product grade, food-safety status, establishment approval or destination eligibility is claimed.
+- This is a buyer due-diligence evaluation UI, not a regulatory decision engine or certification verifier. Actual evidence requires competent independent review against current destination-market rules and the exact product lot.
