@@ -1,216 +1,90 @@
 import { useMemo, useState, type FormEvent } from "react";
 
-type View = "overview" | "products" | "rfqs" | "orders" | "documents" | "shipments";
-type Product = { id: string; name: string; category: string; cut: string; description: string; availability: string };
-type Rfq = { id: string; product: string; volume: string; destination: string; status: string; date: string; notes?: string };
-
-const navigation: { id: View; label: string; icon: string }[] = [
-  { id: "overview", label: "Overview", icon: "▦" },
-  { id: "products", label: "Product catalogue", icon: "◈" },
-  { id: "rfqs", label: "My RFQs", icon: "⇄" },
-  { id: "orders", label: "Purchase orders", icon: "▤" },
-  { id: "documents", label: "Documents", icon: "▧" },
-  { id: "shipments", label: "Shipments", icon: "⌁" },
-];
-
-const pageCopy: Record<View, { eyebrow: string; title: string; description: string }> = {
-  overview: { eyebrow: "BUYER ACCOUNT · DEMO", title: "Good afternoon, Pacific Gourmet.", description: "Your export procurement workspace at a glance." },
-  products: { eyebrow: "DISCOVER OUR RANGE", title: "Product catalogue", description: "Explore illustrative product specifications and request an export quotation." },
-  rfqs: { eyebrow: "COMMERCIAL ENQUIRIES", title: "My RFQs", description: "Create a demonstration request and review its local preview status." },
-  orders: { eyebrow: "ORDER MANAGEMENT", title: "Purchase orders", description: "Review sample confirmed orders and buyer-visible commercial milestones." },
-  documents: { eyebrow: "CONTRACT & TRADE RECORDS", title: "Documents", description: "Illustrative document register for buyer-authorized records." },
-  shipments: { eyebrow: "LOGISTICS VISIBILITY", title: "Shipments", description: "Explore sample shipment milestones and tracking references." },
-};
-
+type Product = { id: string; name: string; category: string; cut: string; description: string; format: string };
 const products: Product[] = [
-  { id: "AHB-P-001", name: "Wagyu Ribeye", category: "Wagyu", cut: "Ribeye · chilled / frozen", description: "Premium ribeye cut. Marble score and specification to be confirmed by quotation.", availability: "RFQ required" },
-  { id: "AHB-P-002", name: "Wagyu Striploin", category: "Wagyu", cut: "Striploin · chilled / frozen", description: "Striploin portioning and pack format configurable to buyer requirements.", availability: "RFQ required" },
-  { id: "AHB-P-003", name: "Angus Tenderloin", category: "Angus", cut: "Tenderloin · chilled / frozen", description: "Premium tenderloin cut. Final grade and weight range subject to offer.", availability: "RFQ required" },
-  { id: "AHB-P-004", name: "Angus Striploin", category: "Angus", cut: "Striploin · chilled / frozen", description: "Export specification, carton weight and delivery window confirmed in quotation.", availability: "RFQ required" },
-  { id: "AHB-P-005", name: "Beef Short Ribs", category: "Beef cuts", cut: "Short ribs · frozen", description: "Cut style, trimming and pack configuration specified per buyer RFQ.", availability: "RFQ required" },
-  { id: "AHB-P-006", name: "Beef Mince", category: "Beef cuts", cut: "Mince · frozen", description: "Fat percentage, grind and pack size to be agreed before order confirmation.", availability: "RFQ required" },
+  { id: "AHB-P-001", name: "Wagyu Ribeye", category: "Wagyu", cut: "Ribeye", description: "A premium centrepiece cut. Marble score, grade and weight range are confirmed in the formal specification.", format: "Chilled / frozen" },
+  { id: "AHB-P-002", name: "Wagyu Striploin", category: "Wagyu", cut: "Striploin", description: "A versatile premium cut with buyer-defined portioning, trimming and carton configuration.", format: "Chilled / frozen" },
+  { id: "AHB-P-003", name: "Angus Tenderloin", category: "Angus", cut: "Tenderloin", description: "A refined tender cut with export specifications and pack formats agreed by quotation.", format: "Chilled / frozen" },
+  { id: "AHB-P-004", name: "Angus Striploin", category: "Angus", cut: "Striploin", description: "A premium loin cut with product grade, chilled/frozen handling and delivery terms confirmed per order.", format: "Chilled / frozen" },
+  { id: "AHB-P-005", name: "Beef Short Ribs", category: "Beef cuts", cut: "Short ribs", description: "Cut style, bone-in specification, trimming and pack size configured to buyer requirements.", format: "Frozen" },
+  { id: "AHB-P-006", name: "Premium Beef Mince", category: "Beef cuts", cut: "Mince", description: "Fat percentage, grind profile and retail or food-service packaging specified in the offer.", format: "Frozen" },
 ];
+const categories = ["All cuts", "Wagyu", "Angus", "Beef cuts"];
 
-const initialRfqs: Rfq[] = [
-  { id: "AHB-RFQ-026", product: "Wagyu Ribeye", volume: "500 kg", destination: "Singapore", status: "Quotation received", date: "24 Nov 2026" },
-  { id: "AHB-RFQ-024", product: "Angus Striploin", volume: "1,000 kg", destination: "UAE", status: "Under review", date: "21 Nov 2026" },
-  { id: "AHB-RFQ-021", product: "Beef Short Ribs", volume: "750 kg", destination: "Japan", status: "Information required", date: "18 Nov 2026" },
-];
-
-function Metric({ label, value, foot }: { label: string; value: string; foot: string }) {
-  return <section className="metric-card"><div className="metric-label">{label}</div><div className="metric-value">{value}</div><div className="metric-foot">{foot}</div></section>;
+function BrandMark() {
+  return <a className="brand-mark" href="#home" aria-label="Australian Halal Beef home"><span className="brand-symbol">AHB</span><span className="brand-name">AUSTRALIAN<br/>HALAL BEEF</span></a>;
 }
-function Status({ children, tone = "green" }: { children: string; tone?: "green" | "blue" | "amber" }) {
-  return <span className={`status status-${tone}`}>{children}</span>;
+function CutArtwork({ index }: { index: number }) {
+  return <div className={`cut-art cut-art-${index % 4}`} role="img" aria-label="Stylised premium beef cut and marbling illustration"><span className="cut-art-label">PREMIUM CUT</span><span className="cut-art-stamp">AHB</span></div>;
 }
-function Activity({ title, detail }: { title: string; detail: string }) {
-  return <div className="activity"><span className="activity-dot" /><div><strong>{title}</strong><div className="subtle">{detail}</div></div></div>;
-}
-function PanelTitle({ title, meta }: { title: string; meta?: string }) {
-  return <div className="panel-heading"><h2>{title}</h2>{meta && <span className="subtle">{meta}</span>}</div>;
-}
-function EmptyState({ title, description }: { title: string; description: string }) {
-  return <div className="empty-state"><strong>{title}</strong><p>{description}</p></div>;
-}
-
-function Overview({ setView, rfqs }: { setView: (view: View) => void; rfqs: Rfq[] }) {
-  return <>
-    <div className="metric-grid">
-      <Metric label="Open quotations" value="3" foot="2 awaiting buyer review" />
-      <Metric label="Active purchase orders" value="2" foot="Across 2 product lines" />
-      <Metric label="Shipments in transit" value="1" foot="Sample update · 2 days ago" />
-      <Metric label="Documents requiring action" value="1" foot="Sample buyer review" />
-    </div>
-    <div className="content-grid">
-      <section className="panel"><PanelTitle title="Recent purchase orders" meta="View all →" />
-        <div className="table-scroll"><table><thead><tr><th>PO NUMBER</th><th>PRODUCT</th><th>STATUS</th><th>UPDATED</th></tr></thead><tbody>
-          <tr><td>AHB-PO-2026-014</td><td>Wagyu Ribeye</td><td><Status>Confirmed</Status></td><td>24 Nov 2026</td></tr>
-          <tr><td>AHB-PO-2026-011</td><td>Angus Striploin</td><td><Status tone="blue">In transit</Status></td><td>22 Nov 2026</td></tr>
-        </tbody></table></div>
-      </section>
-      <section className="panel"><PanelTitle title="Recent activity" meta="Demo" />
-        <Activity title="Quotation received" detail="RFQ-026 · Wagyu Ribeye" />
-        <Activity title="Shipment milestone updated" detail="SH-2026-011 · Vessel departed" />
-        <Activity title="Document uploaded" detail="PO-014 · Draft contract" />
-      </section>
-    </div>
-    <section className="panel section-gap"><PanelTitle title="Latest RFQ activity" meta={`${rfqs.length} sample / demo records`} />
-      <div className="table-scroll"><table><thead><tr><th>REFERENCE</th><th>PRODUCT</th><th>VOLUME</th><th>STATUS</th></tr></thead><tbody>
-        {rfqs.slice(0, 3).map((rfq) => <tr key={rfq.id}><td>{rfq.id}</td><td>{rfq.product}</td><td>{rfq.volume}</td><td><Status tone={rfq.status === "Quotation received" ? "green" : "amber"}>{rfq.status}</Status></td></tr>)}
-      </tbody></table></div>
-      <div className="inline-actions"><button className="secondary-button" onClick={() => setView("rfqs")}>Open RFQs</button><button className="secondary-button" onClick={() => setView("products")}>Browse catalogue</button></div>
-    </section>
-  </>;
-}
-
-function ProductCatalogue({ onRequest }: { onRequest: (product: string) => void }) {
+function App() {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
-  const categories = ["All", "Wagyu", "Angus", "Beef cuts"];
-  const filtered = useMemo(() => products.filter((product) =>
-    (category === "All" || product.category === category) &&
-    `${product.name} ${product.cut} ${product.description}`.toLowerCase().includes(search.toLowerCase())
-  ), [category, search]);
-  return <section className="panel">
-    <PanelTitle title="Export product range" meta={`${filtered.length} products shown · illustrative`} />
-    <div className="toolbar"><label className="search-field"><span aria-hidden="true">⌕</span><input aria-label="Search products" placeholder="Search cut or product..." value={search} onChange={(event) => setSearch(event.target.value)} /></label>
-      <div className="filter-group" aria-label="Filter product category">{categories.map((item) => <button key={item} className={category === item ? "filter-chip selected" : "filter-chip"} onClick={() => setCategory(item)}>{item}</button>)}</div>
-    </div>
-    {filtered.length === 0 ? <EmptyState title="No matching products" description="Try another product name or category." /> :
-      <div className="product-grid">{filtered.map((product) => <article className="product-card" key={product.id}>
-        <div className="product-art" aria-hidden="true"><span>AHB</span><strong>{product.category.toUpperCase()}</strong></div>
-        <div className="product-card-body"><div className="product-id">{product.id} · {product.category}</div><h3>{product.name}</h3><div className="product-cut">{product.cut}</div><p>{product.description}</p><div className="product-card-footer"><Status tone="amber">{product.availability}</Status><button className="text-button" onClick={() => onRequest(product.name)}>Request quote →</button></div></div>
-      </article>)}</div>}
-    <p className="small-note">Product descriptions are illustrative only. No grade, marble score, certification, origin claim, price or export eligibility is represented as verified.</p>
-  </section>;
-}
-
-function RfqWorkspace({ rfqs, onAdd, initialProduct }: { rfqs: Rfq[]; onAdd: (rfq: Rfq) => void; initialProduct: string }) {
-  const [product, setProduct] = useState(initialProduct);
-  const [volume, setVolume] = useState("");
-  const [destination, setDestination] = useState("");
-  const [message, setMessage] = useState("");
+  const [category, setCategory] = useState("All cuts");
+  const [selectedProduct, setSelectedProduct] = useState("General export enquiry");
+  const [modalOpen, setModalOpen] = useState(false);
   const [notice, setNotice] = useState("");
-  function submit(event: FormEvent<HTMLFormElement>) {
+  const [mobileMenu, setMobileMenu] = useState(false);
+  const filtered = useMemo(() => products.filter((p) =>
+    (category === "All cuts" || p.category === category) &&
+    `${p.name} ${p.cut} ${p.description}`.toLowerCase().includes(search.toLowerCase())
+  ), [category, search]);
+  function openRfq(product: string) { setSelectedProduct(product); setNotice(""); setModalOpen(true); }
+  function submitRfq(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!volume.trim() || !destination.trim()) { setNotice("Enter a target volume and destination to create a local demo request."); return; }
-    onAdd({ id: `DEMO-RFQ-${String(rfqs.length + 1).padStart(3, "0")}`, product, volume, destination, status: "Local draft", date: "Today · demo", notes: message });
-    setNotice("Demo RFQ added to this page state only. It has not been sent to Australian Halal Beef.");
-    setVolume(""); setDestination(""); setMessage("");
+    setNotice("Preview request captured locally. No information was transmitted and no quotation has been created.");
   }
-  return <div className="content-grid rfq-layout">
-    <section className="panel"><PanelTitle title="Create a request for quotation" meta="Local demonstration" />
-      <form className="rfq-form" onSubmit={submit}>
-        <label>Product<select value={product} onChange={(event) => setProduct(event.target.value)}>{products.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}</select></label>
-        <label>Target volume<input required value={volume} onChange={(event) => setVolume(event.target.value)} placeholder="e.g. 500 kg / 2,000 cartons" /></label>
-        <label>Destination market<input required value={destination} onChange={(event) => setDestination(event.target.value)} placeholder="Country / port of destination" /></label>
-        <label>Specification notes <span className="subtle">(optional)</span><textarea rows={3} value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Cut, grade, chilled/frozen, packing, delivery window..." /></label>
-        <button className="primary-button" type="submit">＋ Add demo RFQ</button>
-        {notice && <p className="form-notice" role="status">{notice}</p>}
-      </form>
-      <p className="small-note">The form stores no data. Submission only updates the current browser session state and does not contact a seller.</p>
-    </section>
-    <section className="panel"><PanelTitle title="RFQ process" />
-      <ol className="process-list"><li><strong>Request submitted</strong><span>Buyer shares product, volume and destination requirements.</span></li><li><strong>Commercial review</strong><span>Seller reviews specification, capacity and export requirements.</span></li><li><strong>Quotation issued</strong><span>Price, validity, Incoterms and delivery assumptions are proposed.</span></li><li><strong>Contract / order confirmation</strong><span>Order proceeds only after required bilateral agreement.</span></li></ol>
-      <div className="callout-note">Illustrative workflow only. No quotation, contract, payment obligation or order is created by this preview.</div>
-    </section>
-    <section className="panel full-span"><PanelTitle title="RFQ register" meta={`${rfqs.length} records · synthetic / local`} />
-      <div className="table-scroll"><table><thead><tr><th>REFERENCE</th><th>PRODUCT</th><th>VOLUME</th><th>DESTINATION</th><th>STATUS</th><th>DATE</th></tr></thead><tbody>
-        {rfqs.map((rfq) => <tr key={rfq.id}><td>{rfq.id}</td><td>{rfq.product}</td><td>{rfq.volume}</td><td>{rfq.destination}</td><td><Status tone={rfq.status === "Quotation received" ? "green" : "amber"}>{rfq.status}</Status></td><td>{rfq.date}</td></tr>)}
-      </tbody></table></div>
-    </section>
-  </div>;
-}
-
-function Orders() {
-  return <section className="panel"><PanelTitle title="Purchase order register" meta="Synthetic sample records" />
-    <div className="table-scroll"><table><thead><tr><th>PO REFERENCE</th><th>PRODUCT</th><th>QUANTITY</th><th>CONTRACT</th><th>ORDER STATUS</th><th>PAYMENT STATUS</th></tr></thead><tbody>
-      <tr><td>AHB-PO-2026-014</td><td>Wagyu Ribeye</td><td>500 kg</td><td>AHB-C-2026-008</td><td><Status>Confirmed</Status></td><td><Status tone="amber">Deposit pending</Status></td></tr>
-      <tr><td>AHB-PO-2026-011</td><td>Angus Striploin</td><td>1,000 kg</td><td>AHB-C-2026-005</td><td><Status tone="blue">In transit</Status></td><td><Status>Milestone 2 received</Status></td></tr>
-    </tbody></table></div>
-    <p className="small-note">Payment labels are fictional display examples, not bank confirmations, ledger entries or payment instructions. Actual payment terms must follow the executed contract.</p>
-  </section>;
-}
-
-function Documents() {
-  const docs = [
-    ["AHB-C-2026-008", "Sales contract · Wagyu order", "Buyer review", "24 Nov 2026"],
-    ["AHB-INV-2026-014", "Commercial invoice · sample", "Available", "23 Nov 2026"],
-    ["AHB-SPEC-2026-003", "Product specification sheet", "Available", "20 Nov 2026"],
-    ["AHB-HALAL-REF-001", "Halal assurance reference", "Not verified", "—"],
-  ];
-  return <section className="panel"><PanelTitle title="Document register" meta="Synthetic document index" />
-    <div className="table-scroll"><table><thead><tr><th>DOCUMENT REFERENCE</th><th>DESCRIPTION</th><th>ACCESS STATUS</th><th>UPDATED</th><th>ACTION</th></tr></thead><tbody>
-      {docs.map((doc) => <tr key={doc[0]}><td>{doc[0]}</td><td>{doc[1]}</td><td><Status tone={doc[2] === "Available" ? "green" : "amber"}>{doc[2]}</Status></td><td>{doc[3]}</td><td><span className="subtle">Preview only</span></td></tr>)}
-    </tbody></table></div>
-    <p className="small-note">No downloadable documents are attached. Halal assurance is explicitly marked not verified; certification scope and validity must be independently checked before making claims.</p>
-  </section>;
-}
-
-function Shipments() {
-  const steps = ["Order confirmed", "Processing & packing", "Export documentation", "Departed origin port", "Arrived destination"];
-  return <div className="content-grid">
-    <section className="panel"><PanelTitle title="Shipment SH-2026-011" meta="Synthetic tracking example" />
-      <div className="shipment-summary"><div><span className="subtle">RELATED ORDER</span><strong>AHB-PO-2026-011</strong></div><div><span className="subtle">CARGO</span><strong>Angus Striploin · 1,000 kg</strong></div><div><span className="subtle">DESTINATION</span><strong>Jebel Ali · UAE</strong></div><div><span className="subtle">CURRENT STATUS</span><Status tone="blue">In transit · demo</Status></div></div>
-      <ol className="shipment-timeline">{steps.map((step, index) => <li className={index < 4 ? "complete" : ""} key={step}><span className="timeline-dot" /><div><strong>{step}</strong><span className="subtle">{index < 4 ? ["18 Nov 2026", "20 Nov 2026", "21 Nov 2026", "22 Nov 2026"][index] : "Pending sample milestone"}</span></div></li>)}</ol>
-    </section>
-    <section className="panel"><PanelTitle title="Shipment documents" />
-      <Activity title="Packing list" detail="Sample reference · preview only" />
-      <Activity title="Bill of lading" detail="Not attached · sample record" />
-      <Activity title="Health / export documents" detail="Not attached · subject to destination approval" />
-      <div className="callout-note">No carrier connection, vessel position, ETA or customs clearance data is live or verified.</div>
-    </section>
-  </div>;
-}
-
-export default function App() {
-  const [view, setView] = useState<View>("overview");
-  const [rfqs, setRfqs] = useState<Rfq[]>(initialRfqs);
-  const current = pageCopy[view];
-  function addRfq(rfq: Rfq) { setRfqs((previous) => [rfq, ...previous]); }
-  function requestProduct(product: string) { setView("rfqs"); setSelectedProduct(product); }
-  const [selectedProduct, setSelectedProduct] = useState("Wagyu Ribeye");
-  return <div className="app-shell">
-    <aside className="sidebar">
-      <div className="brand">AUSTRALIAN HALAL BEEF<span>BUYER WORKSPACE</span></div>
-      <div className="nav-caption">WORKSPACE</div>
-      <nav aria-label="Buyer workspace navigation">
-        {navigation.map((item) => <button key={item.id} className={view === item.id ? "nav-item active" : "nav-item"} aria-current={view === item.id ? "page" : undefined} onClick={() => setView(item.id)}><span className="nav-icon" aria-hidden="true">{item.icon}</span>{item.label}</button>)}
+  return <div className="site-shell">
+    <div className="announcement"><span>AUSTRALIAN ORIGIN</span><i/> <span>HALAL INTEGRITY</span><i/> <span>GLOBAL B2B SUPPLY</span><span className="announcement-right">Trade enquiries welcome</span></div>
+    <header className="site-header" id="home">
+      <BrandMark />
+      <button className="menu-toggle" aria-label="Toggle navigation" aria-expanded={mobileMenu} onClick={() => setMobileMenu(!mobileMenu)}>☰</button>
+      <nav className={mobileMenu ? "main-nav nav-open" : "main-nav"} aria-label="Main navigation">
+        <a href="#products" onClick={() => setMobileMenu(false)}>Our products</a>
+        <a href="#origin" onClick={() => setMobileMenu(false)}>Australian origin</a>
+        <a href="#assurance" onClick={() => setMobileMenu(false)}>Quality & halal</a>
+        <a href="#process" onClick={() => setMobileMenu(false)}>How to order</a>
       </nav>
-      <div className="account-block">DEMO BUYER ACCOUNT<strong>Pacific Gourmet Imports</strong><span>Synthetic preview data</span></div>
-    </aside>
-    <main className="main-area">
-      <header className="topbar"><div className="breadcrumb">Buyer Workspace / <strong>{current.title}</strong></div><div className="account-chip"><span>Pacific Gourmet Imports</span><span className="avatar" aria-hidden="true">PG</span></div></header>
-      <div className="page-content">
-        <div className="page-heading"><div><div className="eyebrow">{current.eyebrow}</div><h1>{current.title}</h1><p>{current.description}</p></div>{(view === "overview" || view === "products") && <button className="primary-button" onClick={() => setView("rfqs")}>＋ New RFQ</button>}</div>
-        {view === "overview" && <Overview setView={setView} rfqs={rfqs} />}
-        {view === "products" && <ProductCatalogue onRequest={requestProduct} />}
-        {view === "rfqs" && <RfqWorkspace rfqs={rfqs} onAdd={addRfq} initialProduct={selectedProduct} />}
-        {view === "orders" && <Orders />}
-        {view === "documents" && <Documents />}
-        {view === "shipments" && <Shipments />}
-        <div className="disclaimer">DEMO ENVIRONMENT · All buyer, product, quotation, order, payment, document and shipment records are synthetic. No backend, certification registry, financial institution, carrier or export authority is connected.</div>
-      </div>
+      <button className="header-cta" onClick={() => openRfq("General export enquiry")}>Request a quotation <span>↗</span></button>
+    </header>
+
+    <main>
+      <section className="hero-section">
+        <div className="hero-copy">
+          <div className="eyebrow"><span/> PREMIUM AUSTRALIAN BEEF · GLOBAL MARKETS</div>
+          <h1>Integrity in<br/><em>every cut.</em></h1>
+          <p className="hero-lede">Premium beef cuts for discerning importers, distributors and food-service partners around the world.</p>
+          <p className="hero-support">Australian origin. Halal integrity. Global excellence.</p>
+          <div className="hero-actions"><a className="button-primary" href="#products">Explore our range <span>↓</span></a><button className="button-outline" onClick={() => openRfq("General export enquiry")}>Talk to our export team <span>↗</span></button></div>
+          <div className="hero-proof"><span>01</span><div><strong>Built around buyer requirements</strong><small>Product, specification and destination-led quotations</small></div></div>
+        </div>
+        <div className="hero-visual">
+          <div className="hero-image-art"><div className="hero-cut-shape"><span/></div><div className="hero-image-caption">SELECTED CUTS <b>·</b> PREMIUM MARBLING</div></div>
+          <div className="hero-side-note">AUSTRALIA <span>—</span> THE SOURCE</div>
+          <div className="hero-index">01 / 04</div>
+        </div>
+      </section>
+
+      <section className="trust-strip" aria-label="Brand commitments"><div><span>01</span><strong>Australian provenance</strong><small>Evidence-led origin information</small></div><div><span>02</span><strong>Halal integrity</strong><small>Certification status disclosed transparently</small></div><div><span>03</span><strong>Export-ready approach</strong><small>Destination-specific requirements</small></div><div><span>04</span><strong>Buyer-led specification</strong><small>Commercial terms by quotation</small></div></section>
+
+      <section className="products-section section-wrap" id="products">
+        <div className="section-intro"><div><div className="eyebrow">THE PRODUCT COLLECTION</div><h2>Considered cuts.<br/><em>Exceptional standards.</em></h2></div><p>Explore our illustrative product range. Final grades, availability, pack formats and export eligibility are confirmed in a formal quotation for your destination market.</p></div>
+        <div className="catalogue-toolbar"><label className="catalogue-search"><span>⌕</span><input aria-label="Search products" placeholder="Search cuts or products" value={search} onChange={e => setSearch(e.target.value)}/></label><div className="category-filters" aria-label="Product category">{categories.map(c=><button key={c} className={category===c?"category-chip active":"category-chip"} onClick={()=>setCategory(c)}>{c}</button>)}</div></div>
+        <div className="catalogue-grid">{filtered.map((p,i)=><article className="catalogue-card" key={p.id}><CutArtwork index={products.indexOf(p)}/><div className="catalogue-card-body"><div className="product-kicker">{p.id} <span>·</span> {p.category.toUpperCase()}</div><h3>{p.name}</h3><div className="product-meta">{p.cut} <span>·</span> {p.format}</div><p>{p.description}</p><button className="product-cta" onClick={()=>openRfq(p.name)}>Request product quotation <span>↗</span></button></div></article>)}</div>
+        {filtered.length===0&&<div className="no-results">No products match your search. Try another cut or category.</div>}
+        <div className="catalogue-footnote">Product imagery and descriptions are illustrative. Commercial specifications and availability are subject to written confirmation.</div>
+      </section>
+
+      <section className="origin-section" id="origin"><div className="origin-image"><div className="landscape-sun"/><div className="landscape-ridge ridge-back"/><div className="landscape-ridge ridge-front"/><div className="origin-image-label">NEW SOUTH WALES <span>·</span> AUSTRALIA</div></div><div className="origin-copy"><div className="eyebrow">ROOTED IN AUSTRALIA</div><h2>From Australian landscapes<br/>to global tables.</h2><p>Our origin story is built around responsible production, careful processing and transparent export documentation. Regional context is presented separately from verified farm, facility and product provenance.</p><p className="origin-disclaimer">New South Wales regional illustration. Specific farm locations, establishment approvals and supply-chain relationships must be verified before publication as operational claims.</p><a className="text-link" href="#assurance">Discover our standards <span>→</span></a></div></section>
+
+      <section className="assurance-section section-wrap" id="assurance"><div className="assurance-heading"><div className="eyebrow">CONFIDENCE THROUGH TRANSPARENCY</div><h2>Integrity is not a claim.<br/><em>It is demonstrated.</em></h2><p>Quality, halal and export information must be supported by current documents and verified against the relevant product, establishment and destination market.</p></div><div className="assurance-cards"><article><span className="assurance-number">A / 01</span><div className="assurance-icon">✳</div><h3>Halal assurance</h3><p>Certification body, scope, validity and establishment coverage are disclosed only after verification.</p><small>STATUS · NOT VERIFIED IN THIS PREVIEW</small></article><article><span className="assurance-number">A / 02</span><div className="assurance-icon">◇</div><h3>Product quality</h3><p>Grade, cut, weight, temperature and packing specifications are confirmed in the product offer.</p><small>STATUS · SAMPLE SPECIFICATIONS</small></article><article><span className="assurance-number">A / 03</span><div className="assurance-icon">◎</div><h3>Export compliance</h3><p>Market access, establishment eligibility and documentation depend on destination-specific approval.</p><small>STATUS · SUBJECT TO VERIFICATION</small></article></div></section>
+
+      <section className="process-section" id="process"><div className="process-top"><div><div className="eyebrow">A CLEAR COMMERCIAL JOURNEY</div><h2>From first enquiry<br/><em>to confirmed order.</em></h2></div><p>A structured B2B process keeps specifications, commercial terms and buyer approvals clear at every stage.</p></div><div className="process-steps"><div><span>01</span><strong>Buyer enquiry</strong><p>Share product, volume, destination and specification requirements.</p></div><div><span>02</span><strong>Formal quotation</strong><p>Review pricing, validity, Incoterms and delivery assumptions.</p></div><div><span>03</span><strong>Contract & order</strong><p>Confirm agreed terms and documented order requirements.</p></div><div><span>04</span><strong>Export & shipment</strong><p>Follow verified documentation and shipment milestones.</p></div></div><button className="button-light" onClick={()=>openRfq("General export enquiry")}>Start a buyer enquiry <span>↗</span></button></section>
+
+      <section className="closing-cta"><div><div className="eyebrow">LET'S BUILD A SUPPLY RELATIONSHIP</div><h2>Your market.<br/><em>Our commitment.</em></h2></div><div><p>Tell us what your business needs. Our export enquiry process starts with your product specification and destination market.</p><button className="button-primary" onClick={()=>openRfq("General export enquiry")}>Request a quotation <span>↗</span></button></div></section>
     </main>
+    <footer className="site-footer"><BrandMark/><div className="footer-tagline">AUSTRALIAN ORIGIN.<br/>HALAL INTEGRITY.<br/>GLOBAL EXCELLENCE.</div><div className="footer-meta"><span>GLOBAL B2B ENQUIRIES</span><span>© 2026 AUSTRALIAN HALAL BEEF</span><small>Preview concept · No live ordering or certification registry connected</small></div></footer>
+
+    {modalOpen&&<div className="rfq-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setModalOpen(false)}}><section className="rfq-dialog" role="dialog" aria-modal="true" aria-labelledby="rfq-title"><div className="dialog-top"><div><div className="eyebrow">GLOBAL TRADE ENQUIRY</div><h2 id="rfq-title">Request a quotation</h2></div><button className="dialog-close" aria-label="Close enquiry" onClick={()=>setModalOpen(false)}>×</button></div><form onSubmit={submitRfq}><label>Product of interest<input value={selectedProduct} readOnly/></label><label>Business email<input type="email" required placeholder="name@company.com"/></label><label>Destination market<input required placeholder="Country / destination port"/></label><label>Estimated volume<input required placeholder="e.g. 2,000 kg per month"/></label><label>Product requirements<textarea rows={3} placeholder="Cut, grade, chilled/frozen, packaging and delivery window"/></label><button className="button-primary submit-rfq" type="submit">Submit preview enquiry <span>↗</span></button>{notice&&<p className="rfq-notice" role="status">{notice}</p>}<p className="dialog-disclaimer">Demonstration only. This form does not transmit or store personal information, create an RFQ, or constitute a commercial offer.</p></form></section></div>}
   </div>;
 }
+export default App;
