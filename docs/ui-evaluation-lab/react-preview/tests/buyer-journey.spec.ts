@@ -25,7 +25,7 @@ test("opens a product-specific buyer enquiry from the product specification", as
   await expect(page.getByRole("dialog", { name: "Wagyu Ribeye" })).toBeVisible();
   await page.getByRole("button", { name: /Configure buyer enquiry/ }).click();
   await expect(page.getByRole("dialog", { name: "Wagyu Ribeye" }).getByLabel("Destination market")).toBeVisible();
-  await expect(page.getByLabel("Estimated quantity")).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Wagyu Ribeye" }).getByLabel("Estimated quantity")).toBeVisible();
 });
 
 test("submits a local-only buyer enquiry without sending data", async ({ page }) => {
