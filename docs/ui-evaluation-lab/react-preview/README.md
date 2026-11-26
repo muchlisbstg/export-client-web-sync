@@ -38,7 +38,7 @@ Do not use `--force` or `--legacy-peer-deps`. The isolated workflow installs dep
 - Dependency installation: PASS in dedicated GitHub Actions workflow.
 - TypeScript typecheck: PASS.
 - Vite production build: PASS.
-- Browser runtime, responsive viewport testing, keyboard/focus and accessibility review: pending.
+- Chromium browser smoke tests: PASS (4 scenarios) on SHA `dff772a966552f7a03775fd6c87426a5265bc85c`; [workflow run #23](https://github.com/muchlisbstg/export-client-web-sync/actions/runs/45817928445).\n- Mobile viewport overflow check at 390px: PASS.\n- Keyboard/focus audit, automated accessibility scan and broader device matrix: pending.\n- Build artifact `ahb-buyer-portal-react-preview` uploaded by the same workflow; expires 3 Dec 2026.
 - No committed lockfile yet; reproducible locked install remains a follow-up.
 
 ## Governance
