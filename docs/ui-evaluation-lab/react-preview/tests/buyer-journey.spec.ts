@@ -39,3 +39,31 @@ test("keeps the buyer workspace within a mobile viewport", async ({ page }) => {
   const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
   expect(documentWidth).toBeLessThanOrEqual(viewportWidth);
 });
+
+test("supports keyboard navigation with a visible focus indicator", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  const firstFocused = page.locator(":focus");
+  await expect(firstFocused).toBeVisible();
+  const focusStyle = await firstFocused.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth, boxShadow: style.boxShadow };
+  });
+  expect(
+    focusStyle.outlineStyle !== "none" && focusStyle.outlineWidth !== "0px" ||
+    focusStyle.boxShadow !== "none"
+  ).toBeTruthy();
+});
+
+test("does not overflow common tablet and mobile viewport widths", async ({ page }) => {
+  for (const width of [360, 390, 768, 1024]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const dimensions = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      content: document.documentElement.scrollWidth,
+    }));
+    expect(dimensions.content, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(dimensions.viewport);
+  }
+});
+
