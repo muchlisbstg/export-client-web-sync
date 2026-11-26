@@ -2,26 +2,30 @@
 
 ## Current preview assets
 1. `index.html`: public brand and product catalogue visual prototype.
-2. `buyer-workspace-preview.html`: synthetic buyer portal workspace with Overview, Product Catalogue, RFQs, Purchase Orders, Documents, and Shipments navigation.
+2. `buyer-workspace-preview.html`: synthetic HTML buyer workspace.
+3. `react-preview/`: isolated Vite + React + TypeScript application scaffold.
 
-Both are dependency-free HTML prototypes. They can be opened locally in a browser from the repository source, but are not deployed or hosted as a live preview. All data is fictional and interactions are limited to client-side demonstration.
+The HTML prototypes are dependency-free and are not hosted. The React scaffold has a buyer workspace shell and Overview screen; other destinations remain explicit Stage 3 placeholders. No live backend or transaction behavior exists.
 
-## Remaining stages to a React application preview
+## Stage tracker
 
-| Stage | Deliverable | Exit criteria |
-|---|---|---|
-| 1. UI stack decision | Select one candidate: shadcn/ui + Radix, HeroUI, or Mantine | Exact versions, React 19/Vite 8 compatibility, license, accessibility and maintenance evidence recorded |
-| 2. React application shell | Vite + React + TypeScript buyer portal shell | CI install/build passes; responsive navigation and design tokens |
-| 3. Buyer journey screens | Overview, catalogue/detail, RFQ, quotations, purchase orders, documents, payment status and shipments | Synthetic fixtures; buyer-only scope; accessible forms/tables; no live transactions |
-| 4. Preview verification | Browser preview and evidence pack | Build + browser smoke tests + responsive checks + accessibility checks; preview URL or reproducible preview instructions |
+| Stage | Deliverable | Status | Exit criteria |
+|---|---|---|---|
+| 1. UI stack decision | Preferred direction: shadcn/ui + Radix | <b>Preferred candidate recorded</b> | Exact package peer/dependency, license, security and runtime verification remains a gate before adopting those packages |
+| 2. React application shell | Isolated Vite + React + TypeScript shell, responsive navigation, brand tokens and Overview | <b>Scaffold committed; validation pending</b> | Clean install, lockfile, typecheck, production build, browser and responsive smoke checks |
+| 3. Buyer journey screens | Catalogue/detail, RFQ, quotations, purchase orders, documents, payment status and shipments | Not started | Synthetic fixtures; buyer-only scope; accessible forms/tables; no live transactions |
+| 4. Preview verification | Browser preview and evidence pack | Not started | Build + browser smoke tests + responsive checks + accessibility checks; preview URL or reproducible preview instructions |
 
-**Estimate: 4 stages remain to a React application preview.** The HTML prototypes are already available for early visual review; they do not count as the React application preview.
+**Planning estimate: 3 stages remain** to a React application preview. Stage 1 has a preferred candidate decision, but its dependency/security validation is not yet complete. Stage 2 source exists, but it is not yet build- or runtime-verified. This estimate may increase if compatibility or CI blockers are found.
 
 ## Explicit non-goals
-- No backend integration, authentication, tenant authorization, payment processing, contracts execution, or shipment provider integration in this preview.
+- No backend integration, authentication, tenant authorization, payment processing, contract execution, or shipment provider integration.
 - No real customer, supplier, product, certification, origin, price, or shipment data.
-- No production dependencies or lockfile changes until the isolated candidate evaluation is approved.
+- No production app dependency or lockfile changes.
 - No main-branch write, PR merge, staging mutation, or deployment.
 
 ## Important CI finding
 The cross-repository interoperability workflow on the evaluation branch reported a mobile dependency installation failure: `react@19.3.0` conflicts with `react-dom@19.3.1`, whose peer requirement is `react@^19.3.1`. This is a mobile workspace dependency issue and must be handled in the mobile repository's own scoped branch/PR. Do not mask it with `--force` or `--legacy-peer-deps`.
+
+## React scaffold instructions
+See `react-preview/README.md`. No lockfile has been committed yet. A clean dependency install and generated lockfile are required before reproducibility or runtime readiness can be claimed.
