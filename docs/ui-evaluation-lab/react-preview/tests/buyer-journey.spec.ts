@@ -104,7 +104,7 @@ test("uses a Gloucester NSW regional stock photo with a supplier-origin disclaim
 test("loads all public-site visual assets without broken images", async ({ page }) => {
   await page.goto("/");
   const images = page.locator("main img");
-  await expect(images).toHaveCount(24);
+  await expect(images).toHaveCount(25);
   for (const image of await images.all()) {
     const naturalWidth = await image.evaluate(async (node: HTMLImageElement) => {
       node.loading = "eager";
