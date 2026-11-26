@@ -11,3 +11,12 @@
 .cut-art>img{display:block;width:100%;height:100%;object-fit:cover}
 .cut-art-label{z-index:1;background:#102d25b8;padding:6px 8px}
 .origin-image>img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+/* Supporting corporate visual assets. */
+.assurance-image{display:block;width:100%;height:86px;object-fit:cover;margin:14px 0 0;border:1px solid #e4e8df}
+.assurance-icon{margin:12px 0 8px}
+.process-image{display:block;width:100%;height:92px;object-fit:cover;margin:0 0 15px;border:1px solid #ffffff35}
+.origin-supporting-visuals{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.origin-supporting-visuals img{display:block;width:100%;height:100px;object-fit:cover;border:1px solid #d9d7c9}
+.closing-logistics-image{display:block;width:100%;height:118px;object-fit:cover;margin-top:18px;border:1px solid #d8d7ca}
+@media(max-width:480px){.assurance-image{height:125px}.process-image{height:105px}.origin-supporting-visuals img{height:82px}.closing-logistics-image{height:105px}}
