@@ -26,6 +26,7 @@ test("shows the illustrative 30/30/40 payment model and server-side release cont
   await expect(page.locator(".ahb-payment-row strong").nth(2)).toHaveText("40%");
   await page.getByRole("button", { name: /Goods release authorisation/ }).click();
   await expect(page.getByText(/UI state cannot authorise or release goods/)).toBeVisible();
+  await page.getByRole("button", { name: /Payment milestones/ }).click();
   await expect(page.getByText(/No payment instruction, bank connection or settlement occurs/)).toBeVisible();
 });
 
