@@ -2,7 +2,7 @@ import { useMemo, useState, type FormEvent } from "react";
 
 type View = "overview" | "products" | "rfqs" | "orders" | "documents" | "shipments";
 type Product = { id: string; name: string; category: string; cut: string; description: string; availability: string };
-type Rfq = { id: string; product: string; volume: string; destination: string; status: string; date: string };
+type Rfq = { id: string; product: string; volume: string; destination: string; status: string; date: string; notes?: string };
 
 const navigation: { id: View; label: string; icon: string }[] = [
   { id: "overview", label: "Overview", icon: "▦" },
@@ -114,7 +114,7 @@ function RfqWorkspace({ rfqs, onAdd }: { rfqs: Rfq[]; onAdd: (rfq: Rfq) => void 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!volume.trim() || !destination.trim()) { setNotice("Enter a target volume and destination to create a local demo request."); return; }
-    onAdd({ id: `DEMO-RFQ-${String(rfqs.length + 1).padStart(3, "0")}`, product, volume, destination, status: "Local draft", date: "Today · demo" });
+    onAdd({ id: `DEMO-RFQ-${String(rfqs.length + 1).padStart(3, "0")}`, product, volume, destination, status: "Local draft", date: "Today · demo", notes: message });
     setNotice("Demo RFQ added to this page state only. It has not been sent to Australian Halal Beef.");
     setVolume(""); setDestination(""); setMessage("");
   }
@@ -205,7 +205,7 @@ export default function App() {
         <div className="page-heading"><div><div className="eyebrow">{current.eyebrow}</div><h1>{current.title}</h1><p>{current.description}</p></div>{(view === "overview" || view === "products") && <button className="primary-button" onClick={() => setView("rfqs")}>＋ New RFQ</button>}</div>
         {view === "overview" && <Overview setView={setView} rfqs={rfqs} />}
         {view === "products" && <ProductCatalogue onRequest={requestProduct} />}
-        {view === "rfqs" && <RfqWorkspace rfqs={rfqs} onAdd={addRfq} />}
+        {view === "rfqs" && <RfqWorkspace rfqs={rfqs} onAdd={addRfq} initialProduct={selectedProduct} />}
         {view === "orders" && <Orders />}
         {view === "documents" && <Documents />}
         {view === "shipments" && <Shipments />}
