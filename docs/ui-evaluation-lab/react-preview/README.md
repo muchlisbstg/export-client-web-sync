@@ -61,3 +61,21 @@ No production dependency, API, schema, staging or deployment changes. No main-br
 All product records remain synthetic. Grade, marbling, origin, halal certification, establishment eligibility, price, live availability, shelf life, minimum order quantity, lead time and destination market access are not asserted as verified facts. These attributes require documentary verification and written confirmation before commercial publication.
 
 The product-specific enquiry is browser-local demonstration only. It does not transmit, persist, or create an RFQ or quotation.
+
+## Australian origin & provenance experience
+
+- Jurisdiction explorer for all six states and two mainland territories, with searchable contextual profiles and a clear "not to scale" reference-index disclosure.
+- Regional context is explicitly separated from supplier, farm, processor, livestock consignment and product-lot origin claims.
+- Property-to-export traceability framework covering property identity, NLIS animal identification and movement records, processing establishment approval/scope, product and carton lot linkage, and export consignment.
+- Buyer evidence dossier covering property/PIC identity, livestock traceability, establishment eligibility, product/lot reconciliation, country-of-origin substantiation, halal certificate scope/validity, quality and cold-chain records.
+- Destination-market evidence checklist with selectable document categories. The checklist is browser-session UI only and does not contact suppliers or transmit/store data.
+- Keyboard-accessible dialog with focus management, focus trapping, Escape dismissal and trigger-focus restoration.
+
+## Origin and provenance integrity controls
+
+- All jurisdiction profiles are contextual reference content, not AHB sourcing locations or supplier commitments.
+- No farm, supplier, abattoir, export establishment, NLIS, government registry, certificate issuer, shipment or live traceability data is connected.
+- All evidence categories are labelled NOT CONNECTED; origin and halal statuses must not be represented as verified in this preview.
+- An Australian business address, regional illustration or state profile is not proof of country of origin for a specific animal, product or shipment.
+- Actual origin claims and labelling must be substantiated against the relevant product lot and destination-market rules. Property, livestock, processing, halal and export records must reconcile to the same consignment.
+- No internal farm/abattoir operational information is exposed. No production, inventory, supplier or facility data is invented.
