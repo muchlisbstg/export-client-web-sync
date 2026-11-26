@@ -8,6 +8,10 @@ The 18 assets are original, locally hosted SVG illustrations for the isolated pu
 
 | Asset | Intended placement | Evidence status |
 |---|---|---|
+| `AHB-PHOTO-001` — Pexels photo 31406830 | Landing hero editorial photograph | External Pexels CDN; Sydney Sang; Pexels licence reviewed on 26 Nov 2026; Japanese Wagyu context; illustrative only; not AHB inventory, Australian origin, or product evidence; remote-host dependency |
+
+| Asset | Intended placement | Evidence status |
+|---|---|---|
 | `hero-premium-cut.svg` | Landing hero | Original illustrative artwork |
 | `wagyu-ribeye.svg` | Product catalogue | Illustrative product visual |
 | `wagyu-striploin.svg` | Product catalogue | Illustrative product visual |
@@ -36,6 +40,13 @@ The 18 assets are original, locally hosted SVG illustrations for the isolated pu
 - Product images have distinct files and descriptive alt text.
 - SVG is used to keep these first-phase visuals crisp and lightweight.
 - Browser tests verify all 18 images load with non-zero natural dimensions.
+
+## Photography integration — first slice
+
+- `AHB-PHOTO-001` is integrated in the hero as an externally hosted Pexels image. It is not self-hosted; page rendering depends on the Pexels CDN and network access.
+- The hero alt text and visible caption explicitly state that the photo is illustrative and does not represent AHB inventory or Australian origin.
+- Product catalogue images and all other illustrations remain unchanged. Do not reuse this Japanese Wagyu photo as an Australian-origin product image.
+- Re-check Pexels licence and image availability before release. A local optimized derivative is still preferred for production reliability and asset control.
 
 ## Remaining photography phase
 
