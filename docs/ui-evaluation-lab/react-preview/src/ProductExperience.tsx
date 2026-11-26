@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 
 type Product = {
@@ -37,6 +37,7 @@ function ProductExperience() {
   const [showComparison, setShowComparison] = useState(false);
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [notice, setNotice] = useState("");
+  const dialogTriggerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const section = document.querySelector<HTMLElement>("#products");
@@ -70,10 +71,37 @@ function ProductExperience() {
   }
 
   function openDetails(product: Product) {
+    dialogTriggerRef.current = document.activeElement as HTMLElement | null;
     setDetail(product);
     setShowEnquiry(false);
     setNotice("");
   }
+
+  function openComparison() {
+    dialogTriggerRef.current = document.activeElement as HTMLElement | null;
+    setShowComparison(true);
+  }
+
+  useEffect(() => {
+    const modalOpen = Boolean(detail) || showComparison;
+    if (!modalOpen) return;
+    const dialog = document.querySelector<HTMLElement>(".ahb-product-dialog, .ahb-compare-dialog");
+    const focusable = dialog?.querySelectorAll<HTMLElement>('button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])');
+    focusable?.[0]?.focus();
+    function handleModalKeys(event: KeyboardEvent) {
+      if (event.key === "Escape") { setDetail(null); setShowComparison(false); return; }
+      if (event.key !== "Tab" || !focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
+    window.addEventListener("keydown", handleModalKeys);
+    return () => {
+      window.removeEventListener("keydown", handleModalKeys);
+      dialogTriggerRef.current?.focus();
+    };
+  }, [detail, showComparison]);
 
   function submitEnquiry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -109,7 +137,7 @@ function ProductExperience() {
       {visibleProducts.length === 0 && <div className="ahb-empty-state"><strong>No matching product ranges</strong><p>Adjust your search or filters to broaden the catalogue results.</p><button type="button" onClick={() => { setQuery(""); setCategory("All products"); setStorage("All formats"); }}>Clear filters</button></div>}
       <div className="ahb-catalogue-disclosure">All product records, specifications and visuals in this preview are illustrative. Origin, grade, halal certification, establishment eligibility, availability, price and export market access require current documentary verification before commercial use.</div>
 
-      {selected.length > 0 && <div className="ahb-compare-bar" role="region" aria-label="Product comparison selection"><span><strong>{selected.length}</strong> of 3 selected for comparison</span><button type="button" onClick={() => setShowComparison(true)} disabled={selected.length < 2}>Compare products</button><button type="button" className="ahb-clear-compare" onClick={() => setSelected([])}>Clear</button></div>}
+      {selected.length > 0 && <div className="ahb-compare-bar" role="region" aria-label="Product comparison selection"><span><strong>{selected.length}</strong> of 3 selected for comparison</span><button type="button" onClick={openComparison} disabled={selected.length < 2}>Compare products</button><button type="button" className="ahb-clear-compare" onClick={() => setSelected([])}>Clear</button></div>}
 
       {detail && <div className="ahb-modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setDetail(null); }}>
         <section className="ahb-product-dialog" role="dialog" aria-modal="true" aria-labelledby="ahb-detail-title">
