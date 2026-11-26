@@ -12,8 +12,8 @@ The React application now contains Overview, Product Catalogue, RFQ workspace, P
 | Stage | Deliverable | Status | Exit criteria |
 |---|---|---|---|
 | 1. UI stack decision | Preferred direction: shadcn/ui + Radix | <b>Preferred candidate recorded</b> | Exact package peer/dependency, license, security and runtime verification remains a gate before adopting those packages |
-| 2. React application shell | Isolated Vite + React + TypeScript shell, responsive navigation and brand tokens | <b>Source committed; dedicated CI added</b> | Clean dependency resolution, typecheck and production build must pass; lockfile and browser checks still pending |
-| 3. Buyer journey screens | Overview, catalogue/search/filter, RFQ demo form, purchase order/payment status, document register, shipment timeline | <badge>Implemented in source</badge> | Browser interaction, accessibility, responsive and content review still required |
+| 2. React application shell | Isolated Vite + React + TypeScript shell, responsive navigation and brand tokens | <badge color="success">Dedicated CI PASS</badge> | npm install, TypeScript typecheck and production build passed on SHA `b732eaedf1431822eb75105979021757dcaefedd`; committed lockfile and browser checks still pending |
+| 3. Buyer journey screens | Overview, catalogue/search/filter, RFQ demo form, purchase order/payment status, document register, shipment timeline | <badge color="success">Source + build verified</badge> | Screens compile and build; browser interaction, accessibility, responsive and content review still required |
 | 4. Preview verification | Browser preview and evidence pack | Not started | Build + browser smoke tests + responsive checks + accessibility checks; preview URL or reproducible preview instructions |
 
 **Planning estimate: 2 stages remain** to a React application preview. Stage 1's preferred candidate still needs dependency/security validation; Stage 2/3 source has been committed but must pass dedicated CI and runtime verification. The estimate may increase if compatibility or CI blockers are found.
@@ -34,8 +34,8 @@ The React application now contains Overview, Product Catalogue, RFQ workspace, P
 ## CI evidence
 - Existing Web/API verification passed on commit `709a77688c9d45e875c159ad8a77ce25dc810288`.
 - Interoperability failed on the same commit because the mobile workspace resolves `react@19.3.0` while `react-dom@19.3.1` requires peer `react@^19.3.1`. This is a separate mobile dependency blocker.
-- New workflow `.github/workflows/ahb-buyer-portal-preview.yml` runs install, TypeScript typecheck and production build for changes under this isolated preview directory. Its first run is pending.
-- No React build or browser PASS is claimed until the new workflow and runtime checks complete.
+- New workflow `.github/workflows/ahb-buyer-portal-preview.yml` runs install, TypeScript typecheck and production build for changes under this isolated preview directory. Run #7 completed successfully on SHA `b732eaedf1431822eb75105979021757dcaefedd`: `npm install`, `tsc --noEmit` and `vite build` all passed. [Workflow evidence](https://github.com/muchlisbstg/export-client-web-sync/actions/runs/45817441793).
+- React dependency installation, TypeScript typecheck and production build are PASS from the dedicated workflow. Browser runtime, accessibility and responsive checks remain unexecuted; no browser/runtime PASS is claimed.
 
 ## React scaffold instructions
 See `react-preview/README.md`. The isolated preview currently has no committed lockfile; npm install is exercised by the dedicated workflow. A committed lockfile is still needed for fully reproducible installs.
