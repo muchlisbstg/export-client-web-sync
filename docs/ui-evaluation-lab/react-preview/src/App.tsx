@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 type Product = { id: string; name: string; category: string; cut: string; description: string; format: string };
 const products: Product[] = [
@@ -24,6 +24,25 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const [mobileMenu, setMobileMenu] = useState(false);
+  const dialogRef = useRef<HTMLElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!modalOpen) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+    function handleDialogKeys(event: KeyboardEvent) {
+      if (event.key === "Escape") { setModalOpen(false); return; }
+      if (event.key !== "Tab") return;
+      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])');
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
+    window.addEventListener("keydown", handleDialogKeys);
+    return () => { window.removeEventListener("keydown", handleDialogKeys); previousFocus?.focus(); };
+  }, [modalOpen]);
   const filtered = useMemo(() => products.filter((p) =>
     (category === "All cuts" || p.category === category) &&
     `${p.name} ${p.cut} ${p.description}`.toLowerCase().includes(search.toLowerCase())
@@ -84,7 +103,7 @@ function App() {
     </main>
     <footer className="site-footer"><BrandMark/><div className="footer-tagline">AUSTRALIAN ORIGIN.<br/>HALAL INTEGRITY.<br/>GLOBAL EXCELLENCE.</div><div className="footer-meta"><span>GLOBAL B2B ENQUIRIES</span><span>© 2026 AUSTRALIAN HALAL BEEF</span><small>Preview concept · No live ordering or certification registry connected</small></div></footer>
 
-    {modalOpen&&<div className="rfq-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setModalOpen(false)}}><section className="rfq-dialog" role="dialog" aria-modal="true" aria-labelledby="rfq-title"><div className="dialog-top"><div><div className="eyebrow">GLOBAL TRADE ENQUIRY</div><h2 id="rfq-title">Request a quotation</h2></div><button className="dialog-close" aria-label="Close enquiry" onClick={()=>setModalOpen(false)}>×</button></div><form onSubmit={submitRfq}><label>Product of interest<input value={selectedProduct} readOnly/></label><label>Business email<input type="email" required placeholder="name@company.com"/></label><label>Destination market<input required placeholder="Country / destination port"/></label><label>Estimated volume<input required placeholder="e.g. 2,000 kg per month"/></label><label>Product requirements<textarea rows={3} placeholder="Cut, grade, chilled/frozen, packaging and delivery window"/></label><button className="button-primary submit-rfq" type="submit">Submit preview enquiry <span>↗</span></button>{notice&&<p className="rfq-notice" role="status">{notice}</p>}<p className="dialog-disclaimer">Demonstration only. This form does not transmit or store personal information, create an RFQ, or constitute a commercial offer.</p></form></section></div>}
+    {modalOpen&&<div className="rfq-overlay" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setModalOpen(false)}}><section ref={dialogRef} className="rfq-dialog" role="dialog" aria-modal="true" aria-labelledby="rfq-title"><div className="dialog-top"><div><div className="eyebrow">GLOBAL TRADE ENQUIRY</div><h2 id="rfq-title">Request a quotation</h2></div><button className="dialog-close" aria-label="Close enquiry" onClick={()=>setModalOpen(false)}>×</button></div><form onSubmit={submitRfq}><label>Product of interest<input value={selectedProduct} readOnly/></label><label>Business email<input type="email" required placeholder="name@company.com"/></label><label>Destination market<input required placeholder="Country / destination port"/></label><label>Estimated volume<input required placeholder="e.g. 2,000 kg per month"/></label><label>Product requirements<textarea rows={3} placeholder="Cut, grade, chilled/frozen, packaging and delivery window"/></label><button className="button-primary submit-rfq" type="submit">Submit preview enquiry <span>↗</span></button>{notice&&<p className="rfq-notice" role="status">{notice}</p>}<p className="dialog-disclaimer">Demonstration only. This form does not transmit or store personal information, create an RFQ, or constitute a commercial offer.</p></form></section></div>}
   </div>;
 }
 export default App;
