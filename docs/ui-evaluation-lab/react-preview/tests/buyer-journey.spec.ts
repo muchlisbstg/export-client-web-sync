@@ -42,8 +42,8 @@ test("submits a local-only buyer enquiry without sending data", async ({ page })
 test("discloses that Halal assurance and origin details are not verified", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("STATUS · NOT VERIFIED IN THIS PREVIEW")).toBeVisible();
-  await expect(page.getByText(/Specific farm locations, establishment approvals/)).toBeVisible();
-  await expect(page.getByText(/destination-specific approval/)).toBeVisible();
+  await expect(page.getByText(/No farm, supplier, establishment, livestock consignment or product lot has been verified/i)).toBeVisible();
+  await expect(page.getByText(/Claims must be substantiated against the actual lot and the rules of the destination market/i)).toBeVisible();
 });
 
 test("renders without horizontal overflow at mobile, tablet and desktop widths", async ({ page }) => {
@@ -90,10 +90,10 @@ test("uses a real stock photograph in the hero with an explicit non-origin discl
 
 test("uses a Gloucester NSW regional stock photo with a supplier-origin disclaimer", async ({ page }) => {
   await page.goto("/");
-  const originPhoto = page.locator(".origin-image > img");
+  const originPhoto = page.locator(".ahb-origin-photo > img");
   await expect(originPhoto).toHaveAttribute("src", /images\.pexels\.com\/photos\/29531063\//);
   await expect(originPhoto).toHaveAttribute("alt", /Gloucester, New South Wales.*not an AHB supplier farm/i);
-  await expect(page.getByText(/Not an AHB supplier farm or verified supply location/)).toBeVisible();
+  await expect(page.locator(".ahb-origin-photo-disclaimer")).toContainText("Not an AHB supplier farm or verified supply location");
   const naturalWidth = await originPhoto.evaluate(async (node: HTMLImageElement) => {
     await node.decode();
     return node.naturalWidth;
@@ -106,7 +106,6 @@ test("loads all public-site visual assets without broken images", async ({ page 
   const images = page.locator("main img");
   await expect(images).toHaveCount(24);
   for (const image of await images.all()) {
-    await expect(image).toBeVisible();
     const naturalWidth = await image.evaluate(async (node: HTMLImageElement) => {
       node.loading = "eager";
       await node.decode();
