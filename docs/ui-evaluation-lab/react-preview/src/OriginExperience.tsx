@@ -75,6 +75,10 @@ function OriginExperience() {
         <div><span className="ahb-origin-eyebrow">AUSTRALIAN ORIGIN & PROVENANCE</span><h2 id="ahb-origin-title">Know the origin.<br/><em>See the evidence.</em></h2></div>
         <p>Explore Australia's state and territory context, then review the evidence required to substantiate a specific product's origin. A regional profile is not proof of supply origin.</p>
       </div>
+      <figure className="ahb-origin-photo">
+        <img src="https://images.pexels.com/photos/29531063/pexels-photo-29531063.jpeg?auto=compress&w=1600" alt="Editorial stock photograph of cattle grazing on misty hills in Gloucester, New South Wales; not an AHB supplier farm or verified supply location" loading="eager" decoding="async"/>
+        <figcaption><span>GLOUCESTER, NSW · EDITORIAL STOCK PHOTOGRAPH</span><strong className="ahb-origin-photo-disclaimer">Regional editorial image only · Not an AHB supplier farm or verified supply location</strong></figcaption>
+      </figure>
       <div className="ahb-origin-trustline"><span><b>01</b> Jurisdiction context</span><span><b>02</b> Property & livestock traceability</span><span><b>03</b> Processing & lot linkage</span><span><b>04</b> Buyer-ready evidence</span></div>
       <div className="ahb-origin-workspace">
         <aside className="ahb-origin-region-panel">
