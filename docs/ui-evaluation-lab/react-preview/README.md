@@ -46,3 +46,18 @@ Do not use `--force` or `--legacy-peer-deps`. The isolated workflow installs dep
 
 ## Governance
 No production dependency, API, schema, staging or deployment changes. No main-branch write or merge authorization.
+## Professional product catalogue experience
+
+- Search by product name, cut, category or product ID.
+- Filter by product family and chilled / frozen handling format.
+- Sort by product name or category, with result counts and a clear-filter empty state.
+- Open an accessible product specification dialog with product family, cut, handling, grade, packaging and buyer-channel fields.
+- Compare up to three product ranges side by side.
+- Configure a product-specific preview enquiry with destination, estimated quantity, handling preference and packaging notes.
+- Product detail and comparison dialogs support Escape, focus placement, keyboard focus trapping and trigger-focus restoration.
+
+## Product-data integrity
+
+All product records remain synthetic. Grade, marbling, origin, halal certification, establishment eligibility, price, live availability, shelf life, minimum order quantity, lead time and destination market access are not asserted as verified facts. These attributes require documentary verification and written confirmation before commercial publication.
+
+The product-specific enquiry is browser-local demonstration only. It does not transmit, persist, or create an RFQ or quotation.
