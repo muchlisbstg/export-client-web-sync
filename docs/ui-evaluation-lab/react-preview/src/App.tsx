@@ -86,7 +86,7 @@ function App() {
           <div className="hero-proof"><span>01</span><div><strong>Built around buyer requirements</strong><small>Product, specification and destination-led quotations</small></div></div>
         </div>
         <div className="hero-visual">
-          <div className="hero-image-art"><img src={imageAsset("hero-premium-cut.svg")} alt="Illustrative premium Australian beef cut with marbling" fetchPriority="high"/><div className="hero-image-caption">SELECTED CUTS <b>·</b> PREMIUM MARBLING</div></div>
+          <div className="hero-image-art"><img src="https://images.pexels.com/photos/31406830/pexels-photo-31406830.jpeg?auto=compress&w=1600" alt="Illustrative stock photograph of a raw marbled Wagyu steak; not a representation of AHB inventory or Australian origin" fetchPriority="high" decoding="async" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center"}}/><div className="hero-image-caption">ILLUSTRATIVE STOCK PHOTOGRAPH <b>·</b> NOT AHB INVENTORY</div></div>
           <div className="hero-side-note">AUSTRALIA <span>—</span> THE SOURCE</div>
           <div className="hero-index">01 / 04</div>
         </div>
