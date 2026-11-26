@@ -55,3 +55,20 @@ test("product-specific enquiry captures buyer requirements locally only", async 
   await page.getByRole("button", { name: "Save preview enquiry" }).click();
   await expect(page.getByRole("status")).toContainText("No data was transmitted");
 });
+
+test("product detail dialog supports keyboard trapping, Escape and focus restoration", async ({ page }) => {
+  await page.goto("/");
+  const trigger = page.getByRole("button", { name: "View specifications" }).first();
+  await trigger.click();
+  const dialog = page.getByRole("dialog", { name: "Wagyu Ribeye" });
+  const close = page.getByRole("button", { name: "Close product details" });
+  await expect(dialog).toBeVisible();
+  await expect(close).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(page.getByRole("button", { name: /Configure buyer enquiry/ })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(close).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+});
