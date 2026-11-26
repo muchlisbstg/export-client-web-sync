@@ -72,3 +72,14 @@ test("keeps keyboard focus inside the quotation dialog and supports Escape", asy
   await expect(dialog).toHaveCount(0);
   await expect(trigger).toBeFocused();
 });
+
+test("loads all public-site visual assets without broken images", async ({ page }) => {
+  await page.goto("/");
+  const images = page.locator("main img");
+  await expect(images).toHaveCount(8);
+  for (const image of await images.all()) {
+    await expect(image).toBeVisible();
+    const loaded = await image.evaluate((node: HTMLImageElement) => node.complete && node.naturalWidth > 0);
+    expect(loaded, `image failed to load: ${await image.getAttribute("src")}`).toBeTruthy();
+  }
+});
