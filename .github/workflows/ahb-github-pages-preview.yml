@@ -2,12 +2,6 @@ name: AHB GitHub Pages Preview
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - ui/ahb-buyer-portal-evaluation-lab
-    paths:
-      - "docs/ui-evaluation-lab/react-preview/**"
-      - ".github/workflows/ahb-github-pages-preview.yml"
 
 permissions:
   contents: read
