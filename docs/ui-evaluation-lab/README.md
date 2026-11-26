@@ -1,33 +1,61 @@
-# UI Evaluation Lab — Prototype Notes
+# Australian Halal Beef — Public Website Preview
 
-Open `index.html` directly in a modern browser. It has no build step and no third-party dependencies.
+This directory contains an isolated public-facing website prototype for Australian Halal Beef, a premium Australian beef brand targeting global B2B buyers.
 
-## What this prototype proves
-- A shared Australian Halal Beef visual direction.
-- Responsive public buyer website shell.
-- Synthetic product catalogue with search and category filtering.
-- RFQ modal with client-side-only demo submission.
-- Three colour-direction toggles for visual exploration.
+## Open the React preview
 
-## What this prototype does NOT prove
-- It does not import or run shadcn/ui, Radix UI, HeroUI, or Mantine.
-- The A/B/C tabs are visual direction toggles, not implementations of those component libraries.
-- It has no backend, buyer authentication, persistence, real RFQ submission, contract, payment, or shipment integration.
-- Product information, origin, and certification are placeholders; they are not supplier or product claims.
+The current implementation is in `react-preview/` (Vite + React + TypeScript).
 
-## Next evaluation gate
-Create three isolated Vite prototypes (one per candidate) using the same screens and synthetic fixtures. Before installing dependencies, verify exact package versions, peer dependencies for React 19, Vite 8 and TypeScript 7, license identifiers, transitive dependency health, and build compatibility. Then run identical responsive, keyboard/accessibility, and performance checks.
+From this directory:
 
-## Manual smoke-check checklist
-- [ ] Open at desktop width and inspect navigation, hero, catalogue, and footer.
-- [ ] Resize to tablet and mobile; verify no horizontal overflow.
-- [ ] Search for "Wagyu"; verify filtering.
-- [ ] Select "Angus"; verify category filtering.
-- [ ] Open RFQ from a product card; verify product is prefilled.
-- [ ] Submit the demo form; verify the local-only confirmation text.
-- [ ] Close the dialog with the close button and backdrop.
-- [ ] Switch A/B/C visual directions.
-- [ ] Keyboard navigate tabs, buttons, filters, and dialog.
-- [ ] Run automated accessibility and browser tests before any PASS claim.
+```bash
+npm install
+npm run typecheck
+npm run test:e2e
+npm run build
+npm run dev
+```
 
-This is an isolated visual prototype, not a production-ready buyer portal.
+The development server prints a local URL. The production output is generated in `react-preview/dist/`.
+
+## Website sections
+
+- Corporate landing page: Australian origin, Halal integrity and global B2B positioning.
+- Product catalogue: Wagyu, Angus and beef cuts, search and category filtering.
+- Product enquiry: RFQ demonstration with the selected product prefilled.
+- Australian origin: New South Wales landscape illustration and provenance disclosure.
+- Halal and quality assurance: transparent status messaging, without unsupported certification claims.
+- Buyer journey: enquiry, quotation, contract/order and export/shipment stages.
+- Responsive navigation and layouts for mobile, tablet and desktop.
+
+## Automated checks
+
+Dedicated GitHub Actions workflow: [AHB Buyer Portal Preview](https://github.com/muchlisbstg/export-client-web-sync/actions/workflows/ahb-buyer-portal-preview.yml).
+
+Latest successful run: [#45821463280](https://github.com/muchlisbstg/export-client-web-sync/actions/runs/45821463280), commit `81da9b90b737476709f593f89aeb7ac162dc1509`.
+
+- TypeScript typecheck: PASS.
+- Playwright: 6/6 PASS.
+- Vite production build: PASS.
+- Responsive overflow checks: 360, 390, 768, 1024 and 1440 CSS pixels.
+- Build artifact: `ahb-buyer-portal-react-preview`.
+
+## Demo-only boundaries
+
+- Enquiry submission is local to the browser and is not transmitted or persisted.
+- Product descriptions, grades, pack formats and availability are illustrative.
+- New South Wales artwork is regional illustration, not verified farm provenance.
+- Halal certification is marked **not verified in this preview**.
+- Export eligibility, establishment approval and destination access are not asserted.
+- There is no authentication, backend, database, live RFQ, contract, payment, shipment or customer data.
+
+## Not production-ready
+
+This preview demonstrates the public website's visual direction and selected browser interactions. It is not a live ordering platform. A committed npm lockfile, dependency security review, accessibility audit, visual QA and authorized hosted-preview deployment remain outstanding.
+
+## Related files
+
+- `react-preview/src/App.tsx`: public website sections and interactions.
+- `react-preview/src/styles.css`: responsive brand styling.
+- `react-preview/tests/buyer-journey.spec.ts`: browser coverage.
+- `PREVIEW-DELIVERY-PLAN.md`: stage tracker and evidence.
