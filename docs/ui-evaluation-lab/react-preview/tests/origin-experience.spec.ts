@@ -39,7 +39,7 @@ test("buyer can prepare a local-only origin evidence checklist for a destination
   await trigger.click();
   const dialog = page.getByRole("dialog", { name: "Origin evidence checklist" });
   await expect(dialog).toBeVisible();
-  await dialog.getByLabel("Destination market").fill("Singapore");
+  await dialog.getByRole("textbox", { name: "Destination market" }).fill("Singapore");
   await dialog.getByLabel("Property identity").check();
   await dialog.getByLabel("Livestock traceability").check();
   await dialog.getByRole("button", { name: /Prepare evidence request/ }).click();
