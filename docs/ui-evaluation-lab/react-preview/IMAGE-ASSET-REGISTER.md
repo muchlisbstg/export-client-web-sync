@@ -9,6 +9,7 @@ The 18 assets are original, locally hosted SVG illustrations for the isolated pu
 | Asset | Intended placement | Evidence status |
 |---|---|---|
 | `AHB-PHOTO-001` — Pexels photo 31406830 | Landing hero editorial photograph | External Pexels CDN; Sydney Sang; Pexels licence reviewed on 26 Nov 2026; Japanese Wagyu context; illustrative only; not AHB inventory, Australian origin, or product evidence; remote-host dependency |
+| `AHB-PHOTO-002` — Pexels photo 29531063 | Australian origin section | External Pexels CDN; Diana Nguyen; Gloucester, NSW, Australia; Pexels page marks free to use; regional editorial stock only; not an AHB supplier farm or verified supply location; remote-host dependency |
 
 | Asset | Intended placement | Evidence status |
 |---|---|---|
