@@ -26,9 +26,9 @@ function App() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const triggerFocusRef = useRef<HTMLElement | null>(null);
   useLayoutEffect(() => {
     if (!modalOpen) return;
-    const previousFocus = document.activeElement as HTMLElement | null;
     closeButtonRef.current?.focus();
     function handleDialogKeys(event: KeyboardEvent) {
       if (event.key === "Escape") { setModalOpen(false); return; }
@@ -41,13 +41,13 @@ function App() {
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     }
     window.addEventListener("keydown", handleDialogKeys);
-    return () => { window.removeEventListener("keydown", handleDialogKeys); previousFocus?.focus(); };
+    return () => { window.removeEventListener("keydown", handleDialogKeys); triggerFocusRef.current?.focus(); };
   }, [modalOpen]);
   const filtered = useMemo(() => products.filter((p) =>
     (category === "All cuts" || p.category === category) &&
     `${p.name} ${p.cut} ${p.description}`.toLowerCase().includes(search.toLowerCase())
   ), [category, search]);
-  function openRfq(product: string) { setSelectedProduct(product); setNotice(""); setModalOpen(true); }
+  function openRfq(product: string) { triggerFocusRef.current = document.activeElement as HTMLElement | null; setSelectedProduct(product); setNotice(""); setModalOpen(true); }
   function submitRfq(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setNotice("Preview request captured locally. No information was transmitted and no quotation has been created.");
