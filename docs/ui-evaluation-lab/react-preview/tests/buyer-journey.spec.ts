@@ -73,6 +73,19 @@ test("keeps keyboard focus inside the quotation dialog and supports Escape", asy
   await expect(trigger).toBeFocused();
 });
 
+test("uses a real stock photograph in the hero with an explicit non-origin disclaimer", async ({ page }) => {
+  await page.goto("/");
+  const heroPhoto = page.locator(".hero-image-art img");
+  await expect(heroPhoto).toHaveAttribute("src", /images\.pexels\.com\/photos\/31406830\//);
+  await expect(heroPhoto).toHaveAttribute("alt", /not a representation of AHB inventory or Australian origin/i);
+  await expect(page.getByText(/ILLUSTRATIVE STOCK PHOTOGRAPH.*NOT AHB INVENTORY/)).toBeVisible();
+  const naturalWidth = await heroPhoto.evaluate(async (node: HTMLImageElement) => {
+    await node.decode();
+    return node.naturalWidth;
+  });
+  expect(naturalWidth).toBeGreaterThan(0);
+});
+
 test("loads all public-site visual assets without broken images", async ({ page }) => {
   await page.goto("/");
   const images = page.locator("main img");
