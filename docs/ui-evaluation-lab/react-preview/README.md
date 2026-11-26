@@ -1,16 +1,16 @@
-# React Buyer Portal Preview — Stage 2 Scaffold
+# Australian Halal Beef — React Buyer Portal Preview
 
-This folder is a self-contained Vite + React + TypeScript application scaffold. It is intentionally isolated under the UI evaluation lab and does not alter the production app's package manifest or lockfile.
+This is a self-contained Vite + React + TypeScript application isolated under the UI evaluation lab. It does not alter the production app package manifest or lockfile.
 
-## Current implementation
-- React application entry point and strict TypeScript configuration.
-- Responsive buyer workspace shell.
-- Buyer navigation: Overview, Product Catalogue, My RFQs, Purchase Orders, Documents, Shipments.
-- Overview metrics, recent purchase orders and activity using synthetic fixture values.
-- Responsive brand tokens and layout based on Australian Halal Beef identity.
-- Non-overview destinations are clearly marked as Stage 3 placeholders.
+## Implemented screens
+- Overview with sample procurement metrics, recent purchase orders and activity.
+- Product catalogue with search and category filters.
+- RFQ workspace with a local demonstration form, selected-product prefill and in-memory demo record.
+- Purchase order register with illustrative payment status.
+- Document register with explicit verification state labels.
+- Shipment detail with illustrative milestone timeline.
 
-## Run locally (when a Node/npm environment is available)
+## Run locally
 ```sh
 cd docs/ui-evaluation-lab/react-preview
 npm install
@@ -23,13 +23,23 @@ npm run typecheck
 npm run build
 ```
 
-No lockfile is committed yet. A clean dependency install and generated lockfile are required before this scaffold can be considered reproducible or runtime-verified. Do not use `--force` or `--legacy-peer-deps`.
+Do not use `--force` or `--legacy-peer-deps`. The isolated workflow installs dependencies and runs typecheck/build. A successful run is recorded at [Actions run #7](https://github.com/muchlisbstg/export-client-web-sync/actions/runs/45817441793), commit `b732eaedf1431822eb75105979021757dcaefedd`.
 
-## Scope
-- Synthetic data only.
-- No backend calls, persistence, authentication, tenant enforcement, or live transactions.
-- No payment processing, contract execution, supplier integration, or logistics provider integration.
-- No production dependency, API, schema, staging or deployment changes.
+## Demo behavior and limits
+- Product search and category filters run client-side.
+- Request quote opens the RFQ workspace with the selected product prefilled.
+- RFQ form submission adds a synthetic record to in-memory page state only; refresh discards it.
+- Orders, payment statuses, documents and shipment events are fictional fixtures.
+- No file downloads, external tracking, bank/payment actions, contract execution or seller communication.
+- No backend calls, persistence, authentication, tenant enforcement, supplier integration or logistics provider integration.
+- No real product, origin, certification, buyer, price or shipment claim is verified. Halal assurance sample is marked not verified.
 
-## Status
-Scaffold source has been committed to the evaluation branch. Build, typecheck, browser, accessibility and responsive runtime tests are pending.
+## Validation status
+- Dependency installation: PASS in dedicated GitHub Actions workflow.
+- TypeScript typecheck: PASS.
+- Vite production build: PASS.
+- Browser runtime, responsive viewport testing, keyboard/focus and accessibility review: pending.
+- No committed lockfile yet; reproducible locked install remains a follow-up.
+
+## Governance
+No production dependency, API, schema, staging or deployment changes. No main-branch write or merge authorization.
