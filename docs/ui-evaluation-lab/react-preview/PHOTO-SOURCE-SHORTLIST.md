@@ -4,7 +4,7 @@
 
 The website direction is moving from original SVG artwork to real photography. This shortlist records public stock-photo candidates for a **temporary corporate preview only**. A stock image must never be presented as evidence of Australian origin, a named farm, company inventory, a processing establishment, halal certification, or an actual shipment.
 
-**Integration status: PARTIAL — PREVIEW ONLY.** Candidate AHB-PHOTO-001 is now used in the landing hero through the official Pexels CDN, not copied into `public/images/`. It is clearly labelled illustrative and is not approved as product, Australian-origin, supplier, or production evidence. Other candidates remain unintegrated.
+**Integration status: PARTIAL — PREVIEW ONLY.** AHB-PHOTO-001 is used in the landing hero and AHB-PHOTO-002 in the origin section through official Pexels CDN URLs; neither is self-hosted. Both are explicitly disclosed as illustrative editorial stock, not AHB inventory, supplier or production evidence. Other candidates remain unintegrated.
 
 ## Candidate register
 
@@ -32,7 +32,20 @@ The website direction is moving from original SVG artwork to real photography. T
 
 Official licence: https://www.pexels.com/license/. At review time, Pexels states that photos are free to use on websites, attribution is not required, and modification is allowed. It prohibits implying endorsement by people/brands, selling unaltered copies, and redistributing stock files on stock/wallpaper platforms. Re-check the current licence before release. This does not remove privacy, trademark, misleading-caption, or factual-claim obligations.
 
-## First preview integration — AHB-PHOTO-001
+## First preview integrations — AHB-PHOTO-001 and AHB-PHOTO-002
+
+### AHB-PHOTO-002 — Gloucester, NSW cattle landscape
+
+- Official Pexels page: https://www.pexels.com/photo/cattle-grazing-on-misty-morning-in-gloucester-29531064/
+- Photographer: Diana Nguyen.
+- Location stated on source page: Gloucester, New South Wales, Australia.
+- Pexels source page marks the photo free to use; terms should be rechecked before production release.
+- Direct image used: `https://images.pexels.com/photos/29531063/pexels-photo-29531063.jpeg?auto=compress&w=1600`.
+- Integrated into the origin section with visible disclosure: regional editorial image only, not an AHB supplier farm or verified supply location.
+- Browser test checks source, alt text, disclosure and successful decoding.
+- Remote CDN dependency; not self-hosted. Do not imply AHB sourcing, farm relationship, certification or export approval.
+
+### AHB-PHOTO-001 — hero editorial photo
 
 - Integrated in `src/App.tsx` as the hero editorial photograph using the official Pexels CDN URL above.
 - Visible caption and alt text disclose that this is illustrative stock photography, not AHB inventory or Australian origin.
