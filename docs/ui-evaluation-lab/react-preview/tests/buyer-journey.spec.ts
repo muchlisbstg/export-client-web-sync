@@ -36,6 +36,6 @@ test("keeps the buyer workspace within a mobile viewport", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Good afternoon, Pacific Gourmet/ })).toBeVisible();
   const viewportWidth = await page.evaluate(() => document.documentElement.clientWidth);
-  const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);\n  console.log("mobile overflow diagnostics", JSON.stringify({ viewportWidth, documentWidth, diagnostics }));
+  const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
   expect(documentWidth).toBeLessThanOrEqual(viewportWidth);
 });
