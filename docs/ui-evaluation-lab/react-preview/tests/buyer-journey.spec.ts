@@ -79,7 +79,11 @@ test("loads all public-site visual assets without broken images", async ({ page 
   await expect(images).toHaveCount(18);
   for (const image of await images.all()) {
     await expect(image).toBeVisible();
-    const loaded = await image.evaluate((node: HTMLImageElement) => node.complete && node.naturalWidth > 0);
-    expect(loaded, `image failed to load: ${await image.getAttribute("src")}`).toBeTruthy();
+    const naturalWidth = await image.evaluate(async (node: HTMLImageElement) => {
+      node.loading = "eager";
+      await node.decode();
+      return node.naturalWidth;
+    });
+    expect(naturalWidth, `image failed to load: ${await image.getAttribute("src")}`).toBeGreaterThan(0);
   }
 });
