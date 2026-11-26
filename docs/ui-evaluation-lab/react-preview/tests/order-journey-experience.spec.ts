@@ -25,6 +25,7 @@ test("shows the illustrative 30/30/40 payment model and server-side release cont
   await expect(page.getByText("30%", { exact: true })).toBeVisible();
   await expect(page.getByText("40%", { exact: true })).toBeVisible();
   await expect(page.getByText(/Goods release requires authoritative server-side authorisation/)).toBeVisible();
+  await page.getByRole("button", { name: /Payment milestones/ }).click();
   await expect(page.getByText(/No payment instruction, bank connection or settlement occurs/)).toBeVisible();
 });
 
