@@ -1,0 +1,63 @@
+name: AHB GitHub Pages Preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ahb-github-pages-preview
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    name: Verify and publish isolated AHB preview
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: docs/ui-evaluation-lab/react-preview
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs/ui-evaluation-lab/react-preview/package.json
+
+      - name: Install preview dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Browser tests
+        run: npm run test:e2e
+
+      - name: Build GitHub Pages site
+        run: npm run build
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/ui-evaluation-lab/react-preview/dist/
+
+      - name: Deploy preview
+        id: deployment
+        uses: actions/deploy-pages@v4

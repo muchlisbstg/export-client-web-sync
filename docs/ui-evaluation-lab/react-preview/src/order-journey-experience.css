@@ -1,0 +1,68 @@
+.ahb-enhanced-order{padding:0!important;background:#123d32!important}
+.ahb-enhanced-order>.ahb-order-journey-root{display:block}
+.ahb-enhanced-order>.process-top,.ahb-enhanced-order>.process-steps,.ahb-enhanced-order>.button-light{display:none!important}
+.ahb-order-journey{padding:82px 8%;color:#f4efe4}
+.ahb-order-heading{display:grid;grid-template-columns:1fr .75fr;gap:10%;align-items:end}
+.ahb-order-heading .eyebrow{color:#d2b57c}
+.ahb-order-heading h2{font:500 clamp(36px,4.4vw,54px)/1.08 'Playfair Display',Georgia,serif;margin:17px 0 0;color:#f5f0e5;letter-spacing:-.025em}
+.ahb-order-heading h2 em{color:#d4b17a;font-weight:500}
+.ahb-order-heading>p{font-size:11px;line-height:1.9;color:#c1d0c5;margin:0 0 6px;max-width:430px}
+.ahb-order-disclaimer{display:flex;gap:14px;align-items:center;padding:14px 16px;margin:30px 0 25px;border:1px solid #ffffff35;background:#ffffff0b}
+.ahb-order-disclaimer strong{font-size:8px;letter-spacing:.15em;color:#e0bd7e;white-space:nowrap}
+.ahb-order-disclaimer span{font-size:9px;line-height:1.6;color:#d1ded4}
+.ahb-order-layout{display:grid;grid-template-columns:minmax(240px,.75fr) minmax(0,1.5fr);gap:18px;align-items:stretch}
+.ahb-stage-navigation{display:grid;grid-template-columns:1fr 1fr;gap:13px;align-content:start}
+.ahb-stage-group{border:1px solid #ffffff25;padding:12px 10px}
+.ahb-stage-group-label{display:block;font-size:7px;letter-spacing:.18em;color:#d8b779;margin:0 0 8px 4px}
+.ahb-stage-button{width:100%;display:flex;align-items:center;gap:8px;text-align:left;padding:8px 5px;background:transparent;border:1px solid transparent;color:#d4e0d7;min-height:39px}
+.ahb-stage-button>span{font:italic 12px 'Playfair Display',Georgia,serif;color:#d5b67c;flex:none}
+.ahb-stage-button strong{font-size:8px;line-height:1.35;font-weight:600}
+.ahb-stage-button:hover,.ahb-stage-button.is-active{background:#ffffff12;border-color:#c49a5570;color:#fff}
+.ahb-stage-button:focus-visible,.ahb-stage-controls button:focus-visible,.ahb-readiness-button:focus-visible{outline:3px solid #d8b779;outline-offset:3px}
+.ahb-stage-detail{background:#f7f4eb;color:#26332d;padding:27px 29px;display:flex;flex-direction:column;min-height:430px}
+.ahb-stage-detail-top{display:flex;justify-content:space-between;gap:10px;color:#987341;font-size:8px;letter-spacing:.15em;font-weight:700}
+.ahb-stage-detail h3{font:500 clamp(25px,3vw,34px)/1.1 'Playfair Display',Georgia,serif;color:#123d32;margin:22px 0 9px}
+.ahb-stage-summary{font-size:11px;line-height:1.8;color:#68766d;max-width:550px;margin:0}
+.ahb-stage-detail-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:25px;margin:25px 0}
+.ahb-stage-detail-grid h4{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#967344;margin:0 0 10px}
+.ahb-stage-detail-grid p,.ahb-stage-detail-grid li{font-size:10px;line-height:1.8;color:#59675e}
+.ahb-stage-detail-grid ul{padding-left:16px;margin:0}
+.ahb-stage-detail-grid li+li{margin-top:5px}
+.ahb-stage-gate{margin-top:auto;border-left:2px solid #c49a55;background:#eee9dc;padding:11px 13px}
+.ahb-stage-gate strong{font-size:8px;letter-spacing:.14em;color:#946d39}
+.ahb-stage-gate p{font-size:9px;line-height:1.65;color:#5d675e;margin:5px 0 0}
+.ahb-stage-controls{display:flex;justify-content:space-between;gap:12px;margin-top:18px}
+.ahb-stage-controls button{padding:10px 13px;font-size:9px;font-weight:700}
+.ahb-stage-prev{background:transparent;border:1px solid #d6d9d0;color:#536158}
+.ahb-stage-next{background:#123d32;border:1px solid #123d32;color:white}
+.ahb-stage-controls button:disabled{opacity:.35;cursor:not-allowed}
+.ahb-stage-next span{color:#d8b779;margin-left:12px}
+.ahb-order-support-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.ahb-payment-panel,.ahb-buyer-readiness{padding:24px;background:#f7f4eb;color:#26332d}
+.ahb-support-kicker{font-size:8px;letter-spacing:.16em;color:#987341;font-weight:700}
+.ahb-payment-panel h3,.ahb-buyer-readiness h3{font:500 23px 'Playfair Display',Georgia,serif;color:#123d32;margin:10px 0}
+.ahb-payment-panel>p,.ahb-buyer-readiness>p{font-size:9px;line-height:1.7;color:#718077;margin:0 0 16px}
+.ahb-payment-row{display:grid;grid-template-columns:1fr 43px 1.2fr;gap:11px;align-items:center;margin:14px 0}
+.ahb-payment-bar{height:7px;background:#e0e2d9;overflow:hidden}
+.ahb-payment-bar span{display:block;height:100%;background:#c49a55}
+.ahb-payment-row>strong{font:500 17px 'Playfair Display',Georgia,serif;color:#123d32}
+.ahb-payment-row b,.ahb-payment-row small{display:block}
+.ahb-payment-row b{font-size:9px;color:#33483b}
+.ahb-payment-row small{font-size:8px;line-height:1.45;color:#7a867e;margin-top:3px}
+.ahb-payment-rule{padding:10px 12px;background:#eee9dc;color:#5e685f;font-size:8px;line-height:1.6;margin-top:16px}
+.ahb-readiness-progress{height:5px;background:#e0e2d9;margin:15px 0 6px}
+.ahb-readiness-progress span{display:block;height:100%;background:#21845b;transition:width .2s}
+.ahb-buyer-readiness>small{font-size:8px;color:#78847c}
+.ahb-buyer-readiness>label:not(.ahb-destination-label){display:flex;gap:9px;align-items:flex-start;margin-top:12px;font-size:9px;line-height:1.5;color:#526158}
+.ahb-buyer-readiness input[type=checkbox]{accent-color:#123d32;margin:1px 0 0;flex:none}
+.ahb-destination-label{display:grid;gap:6px;margin-top:17px;font-size:9px;font-weight:700;color:#536158}
+.ahb-destination-label select{padding:10px;border:1px solid #d8ddd4;background:#fff;color:#33483b;font:inherit}
+.ahb-readiness-button{margin-top:13px;padding:11px 14px;background:#123d32;border:1px solid #123d32;color:#fff;font-size:9px;font-weight:700}
+.ahb-local-notice{padding:9px 11px;background:#e6efe5;border-left:2px solid #21845b;color:#315d42;font-size:9px;line-height:1.5}
+.ahb-local-disclaimer{font-size:8px!important;color:#8a938b!important;margin:10px 0 0!important}
+.ahb-release-principle{margin-top:18px;padding:19px 21px;border:1px solid #c49a5570;background:#ffffff0b}
+.ahb-release-principle>span{display:block;font-size:8px;letter-spacing:.16em;color:#dfbd80}
+.ahb-release-principle strong{display:block;font:500 20px 'Playfair Display',Georgia,serif;color:#fff;margin:8px 0}
+.ahb-release-principle p{font-size:9px;line-height:1.7;color:#c6d4ca;margin:0;max-width:800px}
+@media(max-width:900px){.ahb-order-journey{padding:65px 6%}.ahb-order-heading{grid-template-columns:1fr;gap:16px}.ahb-order-layout{grid-template-columns:1fr}.ahb-stage-navigation{grid-template-columns:repeat(3,1fr)}.ahb-stage-detail{min-height:0}}
+@media(max-width:600px){.ahb-order-journey{padding:52px 6%}.ahb-order-disclaimer{align-items:flex-start;flex-direction:column;gap:6px}.ahb-stage-navigation{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ahb-stage-group{padding:9px 7px}.ahb-stage-button{gap:6px;padding:7px 3px}.ahb-stage-button strong{font-size:8px}.ahb-stage-detail{padding:22px 18px}.ahb-stage-detail-grid{grid-template-columns:1fr;gap:14px;margin:20px 0}.ahb-order-support-grid{grid-template-columns:1fr}.ahb-payment-panel,.ahb-buyer-readiness{padding:20px 17px}.ahb-payment-row{grid-template-columns:.8fr 38px 1.2fr;gap:8px}.ahb-release-principle{padding:16px}.ahb-release-principle strong{font-size:18px}}

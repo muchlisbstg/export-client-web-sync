@@ -1,0 +1,51 @@
+name: AHB Buyer Portal Preview
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "docs/ui-evaluation-lab/react-preview/**"
+      - ".github/workflows/ahb-buyer-portal-preview.yml"
+  push:
+    branches:
+      - "ui/ahb-buyer-portal-evaluation-lab"
+    paths:
+      - "docs/ui-evaluation-lab/react-preview/**"
+      - ".github/workflows/ahb-buyer-portal-preview.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-preview:
+    name: Typecheck, browser test and build isolated React preview
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs/ui-evaluation-lab/react-preview
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs/ui-evaluation-lab/react-preview/package.json
+      - name: Install preview dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Browser smoke tests
+        run: npm run test:e2e
+      - name: Build preview
+        run: npm run build
+      - name: Upload preview build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ahb-buyer-portal-react-preview
+          path: docs/ui-evaluation-lab/react-preview/dist/
+          if-no-files-found: error
+          retention-days: 7
