@@ -4,7 +4,7 @@
 
 The website direction is moving from original SVG artwork to real photography. This shortlist records public stock-photo candidates for a **temporary corporate preview only**. A stock image must never be presented as evidence of Australian origin, a named farm, company inventory, a processing establishment, halal certification, or an actual shipment.
 
-**Integration status: NOT INTEGRATED.** The candidate pages and licence labels have been reviewed, but image binaries have not yet been added to `public/images/`. No photo is approved for production use by this shortlist.
+**Integration status: PARTIAL — PREVIEW ONLY.** Candidate AHB-PHOTO-001 is now used in the landing hero through the official Pexels CDN, not copied into `public/images/`. It is clearly labelled illustrative and is not approved as product, Australian-origin, supplier, or production evidence. Other candidates remain unintegrated.
 
 ## Candidate register
 
@@ -32,6 +32,13 @@ The website direction is moving from original SVG artwork to real photography. T
 
 Official licence: https://www.pexels.com/license/. At review time, Pexels states that photos are free to use on websites, attribution is not required, and modification is allowed. It prohibits implying endorsement by people/brands, selling unaltered copies, and redistributing stock files on stock/wallpaper platforms. Re-check the current licence before release. This does not remove privacy, trademark, misleading-caption, or factual-claim obligations.
 
+## First preview integration — AHB-PHOTO-001
+
+- Integrated in `src/App.tsx` as the hero editorial photograph using the official Pexels CDN URL above.
+- Visible caption and alt text disclose that this is illustrative stock photography, not AHB inventory or Australian origin.
+- Browser test asserts the source, disclaimer, and successful image decoding. CI evidence is pending for the new commit.
+- This is a remote CDN dependency, not a self-hosted asset. A locally optimized WebP derivative remains the preferred release approach.
+
 ## Required integration steps
 
 1. Download the original image from the creator's official stock-photo page; do not use search thumbnails.
@@ -46,7 +53,7 @@ Official licence: https://www.pexels.com/license/. At review time, Pexels states
 
 ## Current release boundary
 
-- The existing 18 SVG illustrations remain the current website assets until the photography integration gate passes.
+- The 18 original SVG illustrations remain in place for product cards and supporting sections; the hero now uses one illustrative stock photograph.
 - The candidates above are not yet copied into the repository. The direct CDN URLs are recorded for traceability only; no remote hotlink has been integrated into the website.
 - This shortlist does not establish any farm, supplier, establishment, halal certificate, product specification, or export approval.
 - Any public factual caption requires separate company evidence and approval.
