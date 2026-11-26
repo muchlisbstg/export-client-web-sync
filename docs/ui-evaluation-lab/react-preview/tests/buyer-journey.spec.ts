@@ -36,6 +36,6 @@ test("keeps the buyer workspace within a mobile viewport", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Good afternoon, Pacific Gourmet/ })).toBeVisible();
   const viewportWidth = await page.evaluate(() => document.documentElement.clientWidth);
-  const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+  const diagnostics = await page.evaluate(() => Array.from(document.querySelectorAll("body *")).map((element) => { const rect = element.getBoundingClientRect(); return { tag: element.tagName, className: typeof element.className === "string" ? element.className : "", text: (element.textContent || "").trim().slice(0, 45), left: Math.round(rect.left), right: Math.round(rect.right), width: Math.round(rect.width), scrollWidth: element.scrollWidth, clientWidth: element.clientWidth }; }).filter((item) => item.right > document.documentElement.clientWidth + 1 || item.left < -1).slice(0, 20));\n  const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);\n  console.log("mobile overflow diagnostics", JSON.stringify({ viewportWidth, documentWidth, diagnostics }));
   expect(documentWidth).toBeLessThanOrEqual(viewportWidth);
 });
