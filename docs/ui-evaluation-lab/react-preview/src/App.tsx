@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 type Product = { id: string; name: string; category: string; cut: string; description: string; format: string };
 const products: Product[] = [
@@ -26,7 +26,7 @@ function App() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!modalOpen) return;
     const previousFocus = document.activeElement as HTMLElement | null;
     closeButtonRef.current?.focus();
