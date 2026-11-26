@@ -10,20 +10,22 @@ test("renders the public Australian Halal Beef website and navigation", async ({
 
 test("filters the public product catalogue by category and search", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Wagyu", exact: true }).click();
+  await page.getByLabel("Filter by category").selectOption("Wagyu");
   await expect(page.getByRole("heading", { name: "Wagyu Ribeye" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Angus Tenderloin" })).toHaveCount(0);
-  await page.getByRole("button", { name: "All cuts" }).click();
-  await page.getByRole("textbox", { name: "Search products" }).fill("short ribs");
+  await page.getByLabel("Filter by category").selectOption("All products");
+  await page.getByLabel("Search product catalogue").fill("AHB-P-005");
   await expect(page.getByRole("heading", { name: "Beef Short Ribs" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Wagyu Ribeye" })).toHaveCount(0);
 });
 
-test("opens a product-specific quotation enquiry", async ({ page }) => {
+test("opens a product-specific buyer enquiry from the product specification", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: /Request product quotation/ }).first().click();
-  await expect(page.getByRole("dialog", { name: "Request a quotation" })).toBeVisible();
-  await expect(page.getByLabel("Product of interest")).toHaveValue("Wagyu Ribeye");
+  await page.getByRole("button", { name: "View specifications" }).first().click();
+  await expect(page.getByRole("dialog", { name: "Wagyu Ribeye" })).toBeVisible();
+  await page.getByRole("button", { name: /Configure buyer enquiry/ }).click();
+  await expect(page.getByLabel("Destination market")).toBeVisible();
+  await expect(page.getByLabel("Estimated quantity")).toBeVisible();
 });
 
 test("submits a local-only buyer enquiry without sending data", async ({ page }) => {
@@ -57,15 +59,15 @@ test("renders without horizontal overflow at mobile, tablet and desktop widths",
   }
 });
 
-test("keeps keyboard focus inside the quotation dialog and supports Escape", async ({ page }) => {
+test("keeps keyboard focus inside the product specification dialog and supports Escape", async ({ page }) => {
   await page.goto("/");
-  const trigger = page.getByRole("button", { name: /Request product quotation/ }).first();
+  const trigger = page.getByRole("button", { name: "View specifications" }).first();
   await trigger.click();
-  const dialog = page.getByRole("dialog", { name: "Request a quotation" });
-  const close = page.getByRole("button", { name: "Close enquiry" });
+  const dialog = page.getByRole("dialog", { name: "Wagyu Ribeye" });
+  const close = page.getByRole("button", { name: "Close product details" });
   await expect(close).toBeFocused();
   await page.keyboard.press("Shift+Tab");
-  await expect(page.getByRole("button", { name: /Submit preview enquiry/ })).toBeFocused();
+  await expect(page.getByRole("button", { name: /Configure buyer enquiry/ })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(close).toBeFocused();
   await page.keyboard.press("Escape");
@@ -102,7 +104,7 @@ test("uses a Gloucester NSW regional stock photo with a supplier-origin disclaim
 test("loads all public-site visual assets without broken images", async ({ page }) => {
   await page.goto("/");
   const images = page.locator("main img");
-  await expect(images).toHaveCount(18);
+  await expect(images).toHaveCount(24);
   for (const image of await images.all()) {
     await expect(image).toBeVisible();
     const naturalWidth = await image.evaluate(async (node: HTMLImageElement) => {
