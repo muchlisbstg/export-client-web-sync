@@ -56,3 +56,19 @@ test("renders without horizontal overflow at mobile, tablet and desktop widths",
     expect(dimensions.content, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(dimensions.viewport);
   }
 });
+
+test("keeps keyboard focus inside the quotation dialog and supports Escape", async ({ page }) => {
+  await page.goto("/");
+  const trigger = page.getByRole("button", { name: /Request product quotation/ }).first();
+  await trigger.click();
+  const dialog = page.getByRole("dialog", { name: "Request a quotation" });
+  const close = page.getByRole("button", { name: "Close enquiry" });
+  await expect(close).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(page.getByRole("button", { name: /Submit preview enquiry/ })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(close).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+});
