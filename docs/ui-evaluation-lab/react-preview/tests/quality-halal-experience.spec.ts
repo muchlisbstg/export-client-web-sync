@@ -29,8 +29,8 @@ test("evidence search has a useful empty state",async({page})=>{
 });
 test("buyer review brief is local-only and makes no verification claim",async({page})=>{
  await page.goto("/");
- await page.getByLabel("Destination market").fill("Indonesia");
- await page.getByLabel("Demo lot reference").fill("SYNTHETIC-LOT-99");
+ await page.locator(".ahb-assurance-review").getByLabel("Destination market").fill("Indonesia");
+ await page.locator(".ahb-assurance-review").getByLabel("Demo lot reference").fill("SYNTHETIC-LOT-99");
  await page.getByRole("button",{name:/Prepare review brief/}).click();
  await expect(page.getByRole("status")).toContainText("No certificate, lot, supplier or destination eligibility was verified");
 });
