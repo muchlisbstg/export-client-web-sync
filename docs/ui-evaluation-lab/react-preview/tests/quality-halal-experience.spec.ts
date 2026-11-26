@@ -20,7 +20,7 @@ test("evidence control expands to show acceptance criteria and linkage scope",as
  await page.goto("/");
  await page.getByRole("button",{name:/Halal certificate & scope/}).click();
  await expect(page.getByText(/certificate number, validity, covered establishment/)).toBeVisible();
- await expect(page.getByText(/Required linkage:/)).toContainText("Establishment + product lot + destination");
+ await expect(page.locator(".ahb-assurance-detail p").nth(1)).toContainText("Establishment + product lot + destination");
 });
 test("evidence search has a useful empty state",async({page})=>{
  await page.goto("/");
