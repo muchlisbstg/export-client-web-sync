@@ -36,9 +36,12 @@ Do not use `--force` or `--legacy-peer-deps`. The isolated workflow installs dep
 
 ## Validation status
 - Dependency installation: PASS in dedicated GitHub Actions workflow.
-- TypeScript typecheck: PASS.
+- TypeScript typecheck: PASS on commit `f2442f15d17dae88fc55199fb332758522528a7d`.
+- Chromium browser tests: PASS (6/6 scenarios) on commit `f2442f15d17dae88fc55199fb332758522528a7d`; [workflow run #36](https://github.com/muchlisbstg/export-client-web-sync/actions/runs/45818648050).
+- Keyboard focus visibility smoke test: PASS. This is not a complete WCAG audit.
+- Horizontal overflow checks: PASS at 360, 390, 768 and 1024 CSS px.
 - Vite production build: PASS.
-- Chromium browser smoke tests: PASS (4 scenarios) on SHA `dff772a966552f7a03775fd6c87426a5265bc85c`; [workflow run #23](https://github.com/muchlisbstg/export-client-web-sync/actions/runs/45817928445).\n- Mobile viewport overflow check at 390px: PASS.\n- Keyboard/focus audit, automated accessibility scan and broader device matrix: pending.\n- Build artifact `ahb-buyer-portal-react-preview` uploaded by the same workflow; expires 3 Dec 2026.
+- Artifact `ahb-buyer-portal-react-preview`: uploaded by run #36; [artifact](https://github.com/muchlisbstg/export-client-web-sync/actions/runs/45818648050/artifacts/15117255770), artifact ID `15117255770`, retention configured for 7 days.
 - No committed lockfile yet; reproducible `npm ci` remains a follow-up. Dependency security review and automated WCAG scan also remain pending.
 
 ## Governance
