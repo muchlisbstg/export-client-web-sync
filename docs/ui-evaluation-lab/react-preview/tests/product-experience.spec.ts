@@ -50,7 +50,7 @@ test("product-specific enquiry captures buyer requirements locally only", async 
   await page.getByRole("button", { name: "View specifications" }).first().click();
   await page.getByRole("button", { name: /Configure buyer enquiry/ }).click();
   await page.getByRole("dialog", { name: "Wagyu Ribeye" }).getByLabel("Destination market").fill("Singapore");
-  await page.getByLabel("Estimated quantity").fill("2,000 kg");
+  await page.getByRole("dialog", { name: "Wagyu Ribeye" }).getByLabel("Estimated quantity").fill("2,000 kg");
   await page.getByLabel("Preferred handling").selectOption("Chilled");
   await page.getByRole("button", { name: "Save preview enquiry" }).click();
   await expect(page.getByRole("status")).toContainText("No data was transmitted");
