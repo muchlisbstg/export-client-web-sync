@@ -86,6 +86,19 @@ test("uses a real stock photograph in the hero with an explicit non-origin discl
   expect(naturalWidth).toBeGreaterThan(0);
 });
 
+test("uses a Gloucester NSW regional stock photo with a supplier-origin disclaimer", async ({ page }) => {
+  await page.goto("/");
+  const originPhoto = page.locator(".origin-image > img");
+  await expect(originPhoto).toHaveAttribute("src", /images\.pexels\.com\/photos\/29531063\//);
+  await expect(originPhoto).toHaveAttribute("alt", /Gloucester, New South Wales.*not an AHB supplier farm/i);
+  await expect(page.getByText(/Not an AHB supplier farm or verified supply location/)).toBeVisible();
+  const naturalWidth = await originPhoto.evaluate(async (node: HTMLImageElement) => {
+    await node.decode();
+    return node.naturalWidth;
+  });
+  expect(naturalWidth).toBeGreaterThan(0);
+});
+
 test("loads all public-site visual assets without broken images", async ({ page }) => {
   await page.goto("/");
   const images = page.locator("main img");
