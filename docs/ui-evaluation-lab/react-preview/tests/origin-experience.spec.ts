@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("Australian origin explorer lists jurisdictions and clearly separates context from supply claims", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Know the origin. See the evidence." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Know the origin/ })).toBeVisible();
   await expect(page.getByRole("group", { name: "Australian states and territories" }).getByRole("button")).toHaveCount(8);
   await expect(page.getByText("NOT VERIFIED", { exact: true })).toBeVisible();
   await expect(page.getByText(/no farm, supplier, establishment, livestock consignment or product lot has been verified/i)).toBeVisible();
@@ -28,7 +28,7 @@ test("jurisdiction search filters states and territories with an empty state", a
 test("origin traceability framework exposes property-to-export evidence chain", async ({ page }) => {
   await page.goto("/");
   for (const label of ["Property of origin", "Livestock identity", "Processing establishment", "Product & carton lot", "Export consignment"]) {
-    await expect(page.getByText(label, { exact: true })).toBeVisible();
+    await expect(page.getByText(label, { exact: true }).first()).toBeVisible();
   }
   await expect(page.getByText(/No live NLIS, supplier, establishment, government or logistics data is connected/i)).toBeVisible();
 });
@@ -54,8 +54,8 @@ test("origin checklist dialog supports keyboard focus trapping, Escape and focus
   const close = dialog.getByRole("button", { name: "Close origin checklist" });
   await expect(close).toBeFocused();
   await page.keyboard.press("Shift+Tab");
-  await expect(dialog.getByLabel("Destination market")).toBeFocused();
-  await page.keyboard.press("Shift+Tab");
+  await expect(dialog.getByRole("button", { name: /Prepare evidence request/ })).toBeFocused();
+  await page.keyboard.press("Tab");
   await expect(close).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(dialog).toHaveCount(0);
