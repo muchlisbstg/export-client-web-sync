@@ -24,7 +24,7 @@ test("opens a product-specific buyer enquiry from the product specification", as
   await page.getByRole("button", { name: "View specifications" }).first().click();
   await expect(page.getByRole("dialog", { name: "Wagyu Ribeye" })).toBeVisible();
   await page.getByRole("button", { name: /Configure buyer enquiry/ }).click();
-  await expect(page.getByLabel("Destination market")).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Wagyu Ribeye" }).getByLabel("Destination market")).toBeVisible();
   await expect(page.getByLabel("Estimated quantity")).toBeVisible();
 });
 
@@ -32,7 +32,7 @@ test("submits a local-only buyer enquiry without sending data", async ({ page })
   await page.goto("/");
   await page.getByRole("button", { name: /Request a quotation/ }).first().click();
   await page.getByLabel("Business email").fill("buyer@example.com");
-  await page.getByLabel("Destination market").fill("Singapore");
+  await page.getByPlaceholder("Country / destination port").fill("Singapore");
   await page.getByLabel("Estimated volume").fill("2,000 kg per month");
   await page.getByRole("button", { name: /Submit preview enquiry/ }).click();
   await expect(page.getByRole("status")).toContainText("captured locally");
