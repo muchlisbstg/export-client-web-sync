@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   build-preview:
-    name: Typecheck and build isolated React preview
+    name: Typecheck, browser test and build isolated React preview
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -34,7 +34,18 @@ jobs:
           cache-dependency-path: docs/ui-evaluation-lab/react-preview/package.json
       - name: Install preview dependencies
         run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
       - name: Typecheck
         run: npm run typecheck
+      - name: Browser smoke tests
+        run: npm run test:e2e
       - name: Build preview
         run: npm run build
+      - name: Upload preview build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ahb-buyer-portal-react-preview
+          path: docs/ui-evaluation-lab/react-preview/dist/
+          if-no-files-found: error
+          retention-days: 7
