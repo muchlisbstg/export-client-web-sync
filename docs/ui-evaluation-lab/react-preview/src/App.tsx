@@ -105,8 +105,8 @@ function ProductCatalogue({ onRequest }: { onRequest: (product: string) => void 
   </section>;
 }
 
-function RfqWorkspace({ rfqs, onAdd }: { rfqs: Rfq[]; onAdd: (rfq: Rfq) => void }) {
-  const [product, setProduct] = useState("Wagyu Ribeye");
+function RfqWorkspace({ rfqs, onAdd, initialProduct }: { rfqs: Rfq[]; onAdd: (rfq: Rfq) => void; initialProduct: string }) {
+  const [product, setProduct] = useState(initialProduct);
   const [volume, setVolume] = useState("");
   const [destination, setDestination] = useState("");
   const [message, setMessage] = useState("");
